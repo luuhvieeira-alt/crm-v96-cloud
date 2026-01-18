@@ -7,7 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Biblioteca para Arrastar e Soltar (SortableJS) -->
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
     <style>
@@ -26,19 +25,32 @@
 </head>
 <body class="bg-gray-900 text-gray-100 font-sans">
 
-    <!-- Login -->
+    <!-- Tela de Login -->
     <div id="loginScreen" class="min-h-screen flex items-center justify-center bg-black">
         <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-gray-700 text-center">
             <i class="fas fa-shield-alt text-5xl text-blue-500 mb-4"></i>
-            <h1 class="text-2xl font-bold mb-6">VM SEGUROS CLOUD</h1>
-            <input type="text" id="username" placeholder="Usuário" class="w-full p-3 mb-4 bg-gray-700 rounded border border-gray-600 outline-none focus:border-blue-500 text-white">
-            <input type="password" id="password" placeholder="Senha" class="w-full p-3 mb-6 bg-gray-700 rounded border border-gray-600 outline-none focus:border-blue-500 text-white">
-            <button onclick="handleLogin()" class="w-full bg-blue-600 hover:bg-blue-700 p-3 rounded font-bold transition">ENTRAR</button>
-            <p class="text-xs mt-4 text-gray-500">Admin: admin / admin123</p>
+            <h1 class="text-2xl font-bold mb-6 uppercase tracking-widest">Acesso Restrito</h1>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-left text-xs text-gray-500 mb-1 ml-1 uppercase font-bold">Usuário</label>
+                    <input type="text" id="username" placeholder="Digite seu usuário" class="w-full p-3 bg-gray-700 rounded border border-gray-600 text-white outline-none focus:border-blue-500 transition">
+                </div>
+                <div>
+                    <label class="block text-left text-xs text-gray-500 mb-1 ml-1 uppercase font-bold">Senha</label>
+                    <input type="password" id="password" placeholder="Digite sua senha" class="w-full p-3 bg-gray-700 rounded border border-gray-600 text-white outline-none focus:border-blue-500 transition">
+                </div>
+                <button id="btnLogin" onclick="handleLogin()" class="w-full bg-blue-600 hover:bg-blue-700 p-3 rounded font-bold transition shadow-lg mt-2 uppercase tracking-widest">Entrar no Sistema</button>
+                <p id="loginError" class="text-red-500 text-xs font-bold hidden">Usuário ou senha incorretos!</p>
+            </div>
+            
+            <div class="mt-8 pt-6 border-t border-gray-700">
+                <p class="text-[10px] text-gray-500 uppercase font-bold">VM Seguros CRM v96 Cloud Edition</p>
+            </div>
         </div>
     </div>
 
-    <!-- Sistema -->
+    <!-- Sistema Principal -->
     <div id="crmSystem" class="hidden flex flex-col h-screen">
         <header class="bg-gray-800 border-b border-gray-700 p-4 flex justify-between items-center sticky top-0 z-50">
             <div class="flex items-center space-x-3">
@@ -46,20 +58,21 @@
                 <span class="font-bold text-xl uppercase tracking-tighter">VM Seguros <span class="text-blue-500 text-xs">ONLINE</span></span>
             </div>
             <div class="flex items-center space-x-6">
-                <div class="text-xs text-green-500 animate-pulse font-bold"><i class="fas fa-circle mr-1"></i> Nuvem Ativa</div>
+                <div class="text-xs text-green-500 animate-pulse font-bold"><i class="fas fa-circle mr-1"></i> Nuvem Sincronizada</div>
                 <span id="userDisplay" class="text-sm font-bold text-blue-400"></span>
-                <button onclick="location.reload()" class="bg-red-600 px-3 py-1 rounded text-xs hover:bg-red-700 transition font-bold text-white">SAIR</button>
+                <button onclick="location.reload()" class="bg-red-600 px-3 py-1 rounded text-xs hover:bg-red-700 transition font-bold text-white uppercase">Sair</button>
             </div>
         </header>
 
         <div class="flex flex-1 overflow-hidden">
-            <!-- Sidebar Lateral -->
+            <!-- Sidebar Completa -->
             <aside class="w-64 bg-gray-800 border-r border-gray-700 hidden md:block overflow-y-auto scrollbar-thin">
                 <nav class="p-4 space-y-1">
-                    <button onclick="showSection('dashboard', this)" class="nav-item active w-full text-left p-3 rounded flex items-center text-sm"><i class="fas fa-tachometer-alt w-6"></i>Dashboard</button>
-                    <button onclick="showSection('kanban-vendas', this)" class="nav-item w-full text-left p-3 rounded flex items-center text-sm"><i class="fas fa-columns w-6"></i>Kanban Vendas</button>
-                    <button onclick="showSection('vendas', this)" class="nav-item w-full text-left p-3 rounded flex items-center text-sm"><i class="fas fa-chart-line w-6"></i>Vendas</button>
-                    <button onclick="showSection('indicacoes', this)" class="nav-item w-full text-left p-3 rounded flex items-center text-sm"><i class="fas fa-handshake w-6"></i>Indicações</button>
+                    <button onclick="showSection('dashboard', this)" class="nav-item active w-full text-left p-3 rounded flex items-center text-sm font-medium"><i class="fas fa-tachometer-alt w-6"></i>Dashboard</button>
+                    <button onclick="showSection('kanban-vendas', this)" class="nav-item w-full text-left p-3 rounded flex items-center text-sm font-medium"><i class="fas fa-columns w-6"></i>Kanban Vendas</button>
+                    <button onclick="showSection('vendas', this)" class="nav-item w-full text-left p-3 rounded flex items-center text-sm font-medium"><i class="fas fa-list-ul w-6"></i>Vendas Online</button>
+                    <button onclick="showSection('indicacoes', this)" class="nav-item w-full text-left p-3 rounded flex items-center text-sm font-medium"><i class="fas fa-handshake w-6"></i>Indicações</button>
+                    <button onclick="showSection('links-uteis', this)" class="nav-item w-full text-left p-3 rounded flex items-center text-sm font-medium"><i class="fas fa-link w-6"></i>Links Úteis</button>
                 </nav>
             </aside>
 
@@ -68,200 +81,17 @@
                 <!-- DASHBOARD -->
                 <div id="dashboard" class="section active">
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-                        <div class="bg-gray-800 p-6 rounded-xl border border-gray-700">
-                            <p class="text-gray-400 text-xs font-bold uppercase">Vendas Online</p>
+                        <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-xl">
+                            <p class="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Vendas Totais</p>
                             <h2 id="dashVendas" class="text-3xl font-bold">0</h2>
                         </div>
-                        <div class="bg-gray-800 p-6 rounded-xl border border-gray-700">
-                            <p class="text-gray-400 text-xs font-bold uppercase">Prêmio Total</p>
+                        <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-xl">
+                            <p class="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Prêmio Bruto</p>
                             <h2 id="dashPremio" class="text-3xl font-bold text-green-500">R$ 0,00</h2>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <div class="bg-gray-800 p-6 rounded-xl border border-gray-700">
+                        <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-xl">
                             <canvas id="chartVendedores" height="200"></canvas>
                         </div>
-                        <div class="bg-gray-800 p-6 rounded-xl border border-gray-700">
-                            <canvas id="chartEmpresas" height="200"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- KANBAN VENDAS (ARRASTAR E SOLTAR ATIVADO) -->
-                <div id="kanban-vendas" class="section">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-xl font-bold uppercase tracking-widest text-blue-400">Fluxo de Vendas Online</h2>
-                        <button onclick="openModal('modalVenda')" class="bg-green-600 px-4 py-2 rounded font-bold text-sm hover:bg-green-700 shadow-lg">+ Nova Venda</button>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <div class="kanban-column">
-                            <h3 class="text-xs font-bold mb-4 uppercase text-gray-500">Fazer Vistoria</h3>
-                            <div id="col-vistoria" data-status="Fazer Vistoria" class="sortable-list space-y-3 h-full"></div>
-                        </div>
-                        <div class="kanban-column">
-                            <h3 class="text-xs font-bold mb-4 uppercase text-gray-500">Mandar Boletos</h3>
-                            <div id="col-boletos" data-status="Mandar Boletos" class="sortable-list space-y-3 h-full"></div>
-                        </div>
-                        <div class="kanban-column">
-                            <h3 class="text-xs font-bold mb-4 uppercase text-gray-500">Falta Pagamento</h3>
-                            <div id="col-pagamento" data-status="Falta Pagamento" class="sortable-list space-y-3 h-full"></div>
-                        </div>
-                        <div class="kanban-column">
-                            <h3 class="text-xs font-bold mb-4 uppercase text-gray-500">Pagamento Efetuado</h3>
-                            <div id="col-concluido" data-status="Pagamento Efetuado" class="sortable-list space-y-3 h-full"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- VENDAS (TABELA) -->
-                <div id="vendas" class="section">
-                    <div class="bg-gray-800 rounded-xl overflow-hidden border border-gray-700">
-                        <table class="w-full text-left text-sm">
-                            <thead class="bg-gray-700 uppercase text-[10px] text-gray-400">
-                                <tr>
-                                    <th class="p-4">Cliente</th>
-                                    <th class="p-4">Seguradora</th>
-                                    <th class="p-4">Vendedor</th>
-                                    <th class="p-4">Valor</th>
-                                    <th class="p-4">Comissão (15%)</th>
-                                    <th class="p-4 text-center">Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tableVendas"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- INDICAÇÕES -->
-                <div id="indicacoes" class="section">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-xl font-bold uppercase tracking-widest text-blue-400">Indicações</h2>
-                        <button onclick="openModal('modalLead')" class="bg-blue-600 px-4 py-2 rounded font-bold text-sm">+ Novo Lead</button>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="leadsGrid"></div>
-                </div>
-
-            </main>
-        </div>
-    </div>
-
-    <!-- MODAIS -->
-    <div id="modalVenda" class="fixed inset-0 bg-black/90 hidden items-center justify-center z-[100] p-4">
-        <div class="bg-gray-800 p-6 rounded-2xl w-full max-w-md border border-gray-700 shadow-2xl">
-            <h3 class="text-xl font-bold mb-4">Lançar Venda na Nuvem</h3>
-            <form id="formVenda" class="space-y-4">
-                <input type="text" id="v_cliente" placeholder="Nome do Cliente" class="w-full p-3 bg-gray-700 rounded border border-gray-600 text-white outline-none focus:border-blue-500" required>
-                <select id="v_empresa" class="w-full p-3 bg-gray-700 rounded border border-gray-600 text-white">
-                    <option>Porto Seguro</option><option>Azul Seguros</option><option>Bradesco</option><option>Suhai</option><option>HDI</option><option>Tokio Marine</option>
-                </select>
-                <select id="v_vendedor" class="w-full p-3 bg-gray-700 rounded border border-gray-600 text-white">
-                    <option>Igor Vicente</option><option>Jessica Regis</option><option>Luana Vieira</option><option>Leonardo Ferreira</option><option>Mados</option><option>Ana Beatriz</option><option>Elen Jaconis</option>
-                </select>
-                <input type="number" id="v_valor" placeholder="Valor do Prêmio (R$)" class="w-full p-3 bg-gray-700 rounded border border-gray-600 text-white outline-none focus:border-blue-500" required>
-                <select id="v_status" class="w-full p-3 bg-gray-700 rounded border border-gray-600 text-white">
-                    <option>Fazer Vistoria</option><option>Mandar Boletos</option><option>Falta Pagamento</option><option>Pagamento Efetuado</option>
-                </select>
-                <div class="flex justify-end space-x-3 pt-4">
-                    <button type="button" onclick="closeModal('modalVenda')" class="p-3 text-gray-400">Cancelar</button>
-                    <button type="submit" id="btnSaveVenda" class="bg-blue-600 px-6 py-3 rounded font-bold hover:bg-blue-700 transition">SALVAR ONLINE</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div id="modalLead" class="fixed inset-0 bg-black/90 hidden items-center justify-center z-[100] p-4">
-        <div class="bg-gray-800 p-6 rounded-2xl w-full max-w-md border border-gray-700 shadow-2xl">
-            <h3 class="text-xl font-bold mb-4">Novo Lead</h3>
-            <form id="formLead" class="space-y-4">
-                <input type="text" id="l_nome" placeholder="Nome do Lead" class="w-full p-3 bg-gray-700 rounded border border-gray-600 text-white outline-none" required>
-                <input type="text" id="l_tel" placeholder="WhatsApp" class="w-full p-3 bg-gray-700 rounded border border-gray-600 text-white outline-none" required>
-                <input type="text" id="l_veiculo" placeholder="Veículo" class="w-full p-3 bg-gray-700 rounded border border-gray-600 text-white outline-none">
-                <div class="flex justify-end space-x-3 pt-4">
-                    <button type="button" onclick="closeModal('modalLead')" class="p-3 text-gray-400">Cancelar</button>
-                    <button type="submit" id="btnSaveLead" class="bg-blue-600 px-6 py-3 rounded font-bold hover:bg-blue-700 transition">ADICIONAR</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- SCRIPTS FIREBASE -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-        // CONFIGURAÇÃO DO SEU FIREBASE
-        const firebaseConfig = {
-            apiKey: "AIzaSyDvlpoHOKyRXmNG3RVYiTspOQ3TxsHH03s",
-            authDomain: "vm-seguros-crm.firebaseapp.com",
-            projectId: "vm-seguros-crm",
-            storageBucket: "vm-seguros-crm.firebasestorage.app",
-            messagingSenderId: "420895990730",
-            appId: "1:420895990730:web:f6c753d929d84b5330e533"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        window.cloud = {
-            vendas: [],
-            leads: [],
-            async salvarVenda(dados) {
-                await addDoc(collection(db, "vendas"), { ...dados, dataCriacao: Date.now() });
-            },
-            async salvarLead(dados) {
-                await addDoc(collection(db, "leads"), { ...dados, dataCriacao: Date.now() });
-            },
-            async atualizarStatusVenda(id, novoStatus) {
-                await updateDoc(doc(db, "vendas", id), { status: novoStatus });
-            },
-            async excluir(col, id) {
-                if(confirm("Deseja excluir na nuvem?")) await deleteDoc(doc(db, col, id));
-            }
-        };
-
-        onSnapshot(query(collection(db, "vendas"), orderBy("dataCriacao", "desc")), (snap) => {
-            window.cloud.vendas = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-            renderAll();
-        });
-
-        onSnapshot(query(collection(db, "leads"), orderBy("dataCriacao", "desc")), (snap) => {
-            window.cloud.leads = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-            renderAll();
-        });
-    </script>
-
-    <script>
-        const LOGIN_DB = { 'admin': 'admin123', 'igor.vicente': 'real123', 'mados': 'mados123', 'jessica.regis': 'jessica123', 'luana.vieira': 'luana123' };
-
-        function handleLogin() {
-            const u = document.getElementById('username').value;
-            const p = document.getElementById('password').value;
-            if(LOGIN_DB[u] === p) {
-                document.getElementById('loginScreen').classList.add('hidden');
-                document.getElementById('crmSystem').classList.remove('hidden');
-                document.getElementById('userDisplay').textContent = u.toUpperCase();
-                initSortable();
-                renderAll();
-            } else { alert("Login Incorreto!"); }
-        }
-
-        // --- INICIAR ARRASTAR E SOLTAR ---
-        function initSortable() {
-            const cols = document.querySelectorAll('.sortable-list');
-            cols.forEach(col => {
-                new Sortable(col, {
-                    group: 'vendasCloud',
-                    animation: 200,
-                    ghostClass: 'sortable-ghost',
-                    onEnd: async (evt) => {
-                        const id = evt.item.getAttribute('data-id');
-                        const status = evt.to.getAttribute('data-status');
-                        if(window.cloud) await window.cloud.atualizarStatusVenda(id, status);
-                    }
-                });
-            });
-        }
-
-        function showSection(id, btn) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classL
+                        <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-xl">
