@@ -3,76 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VM SEGUROS - CRM CLOUD v96</title>
+    <title>VM SEGUROS - CRM CLOUD v96 PRO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
     <style>
+        .scrollbar-thin::-webkit-scrollbar { width: 4px; }
+        .scrollbar-thin::-webkit-scrollbar-track { background: #1f2937; }
+        .scrollbar-thin::-webkit-scrollbar-thumb { background: #4b5563; }
+        .nav-item { transition: all 0.2s; border-left: 4px solid transparent; }
         .nav-item.active { background-color: #374151; color: white; border-left: 4px solid #3b82f6; }
         .section { display: none; }
-        .section.active { display: block; }
-        .kanban-column { min-height: 500px; background: #111827; border-radius: 12px; padding: 12px; border: 1px solid #374151; }
-        .kanban-card { cursor: grab; }
+        .section.active { display: block; animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .kanban-column { min-height: 600px; background: #111827; border-radius: 12px; padding: 12px; border: 1px solid #374151; }
+        .suhai-indicator { animation: pulse-suhai 2s infinite; color: #10b981; }
+        @keyframes pulse-suhai { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
         .sortable-ghost { opacity: 0.3; background: #3b82f6 !important; }
     </style>
 </head>
 <body class="bg-gray-900 text-gray-100 font-sans">
 
     <!-- LOGIN SCREEN -->
-    <div id="loginScreen" class="min-h-screen flex items-center justify-center bg-black overflow-hidden">
-        <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-gray-700 text-center relative z-10">
+    <div id="loginScreen" class="min-h-screen flex items-center justify-center bg-black">
+        <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-gray-700 text-center">
             <i class="fas fa-shield-alt text-5xl text-blue-600 mb-4"></i>
-            <h1 class="text-2xl font-bold mb-6 uppercase tracking-widest">Acesso Restrito</h1>
-            
+            <h1 class="text-2xl font-bold mb-6 uppercase tracking-widest text-white">VM Seguros Cloud</h1>
             <div class="space-y-4">
                 <input type="text" id="username" placeholder="USUÁRIO" class="w-full p-4 bg-gray-900 rounded border border-gray-700 outline-none focus:border-blue-500 text-white uppercase text-center">
                 <input type="password" id="password" placeholder="SENHA" class="w-full p-4 bg-gray-900 rounded border border-gray-700 outline-none focus:border-blue-500 text-white text-center">
-                <button onclick="handleLogin()" class="w-full bg-blue-600 hover:bg-blue-700 p-4 rounded font-bold transition uppercase tracking-widest text-sm shadow-xl">Entrar no Sistema</button>
-                <p id="errorMessage" class="text-red-500 text-xs font-bold mt-2 hidden">Usuário ou senha incorretos!</p>
-            </div>
-            <div class="mt-6 pt-4 border-t border-gray-700 text-[10px] text-gray-500 uppercase font-bold">
-                VM SEGUROS CRM v96 CLOUD EDITION
+                <button onclick="handleLogin()" class="w-full bg-blue-600 hover:bg-blue-700 p-4 rounded font-bold uppercase shadow-xl transition">Acessar CRM</button>
+                <p id="loginError" class="text-red-500 text-xs font-bold hidden">Dados incorretos!</p>
             </div>
         </div>
     </div>
 
-    <!-- MAIN CRM SYSTEM -->
+    <!-- MAIN SYSTEM -->
     <div id="crmSystem" class="hidden flex flex-col h-screen">
-        <header class="bg-gray-800 border-b border-gray-700 p-4 flex justify-between items-center">
+        <header class="bg-gray-800 border-b border-gray-700 p-4 flex justify-between items-center sticky top-0 z-50">
             <div class="flex items-center space-x-3">
-                <i class="fas fa-cloud text-blue-500 text-xl"></i>
-                <span class="font-bold text-lg uppercase">VM Seguros <span class="text-blue-500">Cloud</span></span>
+                <i class="fas fa-shield-alt text-blue-500 text-2xl"></i>
+                <span class="font-bold text-xl uppercase tracking-tighter">VM Seguros <span class="text-blue-500 text-xs">v96</span></span>
             </div>
             <div class="flex items-center space-x-6">
-                <span id="userDisplay" class="text-xs font-bold text-blue-400 border border-blue-400 px-2 py-1 rounded"></span>
-                <button onclick="location.reload()" class="bg-red-600 px-4 py-1 rounded text-xs font-bold uppercase">Sair</button>
+                <div class="text-[10px] text-green-500 animate-pulse font-bold uppercase"><i class="fas fa-circle mr-1"></i> Cloud Sincronizado</div>
+                <span id="userDisplay" class="text-sm font-bold text-blue-400"></span>
+                <button onclick="location.reload()" class="bg-red-600 px-3 py-1 rounded text-[10px] font-bold uppercase">Sair</button>
             </div>
         </header>
 
         <div class="flex flex-1 overflow-hidden">
-            <!-- Sidebar -->
-            <aside class="w-64 bg-gray-800 border-r border-gray-700 p-4 flex flex-col space-y-2">
-                <button onclick="showSection('dashboard', this)" class="nav-item active w-full text-left p-3 rounded flex items-center text-sm font-bold uppercase tracking-tighter"><i class="fas fa-home w-8"></i>Dashboard</button>
-                <button onclick="showSection('kanban-vendas', this)" class="nav-item w-full text-left p-3 rounded flex items-center text-sm font-bold uppercase tracking-tighter"><i class="fas fa-columns w-8"></i>Kanban Vendas</button>
-                <button onclick="showSection('vendas', this)" class="nav-item w-full text-left p-3 rounded flex items-center text-sm font-bold uppercase tracking-tighter"><i class="fas fa-list w-8"></i>Vendas Online</button>
-                <button onclick="showSection('indicacoes', this)" class="nav-item w-full text-left p-3 rounded flex items-center text-sm font-bold uppercase tracking-tighter"><i class="fas fa-handshake w-8"></i>Indicações</button>
+            <!-- SIDEBAR COM A SEQUÊNCIA SOLICITADA -->
+            <aside class="w-64 bg-gray-800 border-r border-gray-700 hidden md:block overflow-y-auto scrollbar-thin">
+                <nav class="p-4 space-y-1">
+                    <button onclick="showSection('dashboard', this)" class="nav-item active w-full text-left p-3 rounded flex items-center text-xs font-bold uppercase"><i class="fas fa-tachometer-alt w-8"></i>Dashboard</button>
+                    <button onclick="showSection('kanban-vendas', this)" class="nav-item w-full text-left p-3 rounded flex items-center text-xs font-bold uppercase"><i class="fas fa-columns w-8"></i>Kanban Vendas</button>
+                    <button onclick="showSection('kanban-indicacoes', this)" class="nav-item w-full text-left p-3 rounded flex items-center text-xs font-bold uppercase"><i class="fas fa-stream w-8"></i>Kanban Indicações</button>
+                    <button onclick="showSection('indicacoes', this)" class="nav-item w-full text-left p-3 rounded flex items-center text-xs font-bold uppercase"><i class="fas fa-handshake w-8"></i>Indicações</button>
+                    <button onclick="showSection('vendas', this)" class="nav-item w-full text-left p-3 rounded flex items-center text-xs font-bold uppercase"><i class="fas fa-shopping-cart w-8"></i>Vendas</button>
+                    <button onclick="showSection('vendedores', this)" class="nav-item w-full text-left p-3 rounded flex items-center text-xs font-bold uppercase"><i class="fas fa-users w-8"></i>Vendedores</button>
+                    <button onclick="showSection('comissao', this)" class="nav-item w-full text-left p-3 rounded flex items-center text-xs font-bold uppercase"><i class="fas fa-percentage w-8"></i>Comissão</button>
+                    <button onclick="showSection('cancelamentos', this)" class="nav-item w-full text-left p-3 rounded flex items-center text-xs font-bold uppercase"><i class="fas fa-times-circle w-8"></i>Cancelamentos</button>
+                    <button onclick="showSection('relatorios', this)" class="nav-item w-full text-left p-3 rounded flex items-center text-xs font-bold uppercase"><i class="fas fa-file-alt w-8"></i>Relatórios</button>
+                    <button onclick="showSection('links-uteis', this)" class="nav-item w-full text-left p-3 rounded flex items-center text-xs font-bold uppercase"><i class="fas fa-link w-8"></i>Links Úteis</button>
+                    <button onclick="showSection('sem-sucesso', this)" class="nav-item w-full text-left p-3 rounded flex items-center text-xs font-bold uppercase"><i class="fas fa-exclamation-triangle w-8"></i>Sem Sucesso</button>
+                    <button onclick="showSection('lembretes', this)" class="nav-item w-full text-left p-3 rounded flex items-center text-xs font-bold uppercase"><i class="fas fa-bell w-8"></i>Lembretes</button>
+                    <button onclick="showSection('lead-suhai', this)" class="nav-item w-full text-left p-3 rounded flex items-center text-xs font-bold uppercase text-green-400"><i class="fas fa-star w-8 suhai-indicator"></i>Lead Suhai</button>
+                    <button onclick="showSection('configuracoes', this)" class="nav-item w-full text-left p-3 rounded flex items-center text-xs font-bold uppercase"><i class="fas fa-cog w-8"></i>Configurações</button>
+                </nav>
             </aside>
 
-            <!-- Content Area -->
-            <main class="flex-1 p-6 overflow-y-auto">
+            <!-- MAIN CONTENT -->
+            <main class="flex-1 p-6 overflow-y-auto bg-gray-900">
                 
                 <!-- DASHBOARD -->
                 <div id="dashboard" class="section active">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
                         <div class="bg-gray-800 p-6 rounded-xl border border-gray-700">
-                            <p class="text-gray-500 text-xs font-bold uppercase">Vendas Totais</p>
-                            <h2 id="dashVendas" class="text-3xl font-bold">0</h2>
+                            <p class="text-gray-500 text-[10px] font-bold uppercase">Vendas</p>
+                            <h2 id="dashVendas" class="text-2xl font-bold">0</h2>
                         </div>
                         <div class="bg-gray-800 p-6 rounded-xl border border-gray-700">
-                            <p class="text-gray-500 text-xs font-bold uppercase">Prêmio Bruto</p>
-                            <h2 id="dashPremio" class="text-3xl font-bold text-green-500">R$ 0,00</h2>
+                            <p class="text-gray-500 text-[10px] font-bold uppercase">Prêmio Total</p>
+                            <h2 id="dashPremio" class="text-2xl font-bold text-green-500">R$ 0,00</h2>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -81,81 +96,95 @@
                     </div>
                 </div>
 
-                <!-- KANBAN -->
+                <!-- KANBAN VENDAS -->
                 <div id="kanban-vendas" class="section">
                     <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-xl font-bold uppercase text-blue-500">Fluxo de Operações</h2>
-                        <button onclick="openModal('modalVenda')" class="bg-green-600 px-6 py-2 rounded font-bold text-xs uppercase">+ Nova Venda</button>
+                        <h2 class="text-xl font-bold uppercase tracking-widest text-blue-500">Kanban de Vendas</h2>
+                        <button onclick="openModal('modalVenda')" class="bg-green-600 px-4 py-2 rounded font-bold text-xs">+ Nova Venda</button>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <div class="kanban-column"><h3 class="text-[10px] font-bold mb-4 uppercase text-gray-500">Vistoria</h3><div id="col-vistoria" data-status="Fazer Vistoria" class="sortable-list space-y-3 h-full"></div></div>
-                        <div class="kanban-column"><h3 class="text-[10px] font-bold mb-4 uppercase text-gray-500">Boletos</h3><div id="col-boletos" data-status="Mandar Boletos" class="sortable-list space-y-3 h-full"></div></div>
-                        <div class="kanban-column"><h3 class="text-[10px] font-bold mb-4 uppercase text-gray-500">Pagamento</h3><div id="col-pagamento" data-status="Falta Pagamento" class="sortable-list space-y-3 h-full"></div></div>
-                        <div class="kanban-column"><h3 class="text-[10px] font-bold mb-4 uppercase text-gray-500">Concluído</h3><div id="col-concluido" data-status="Pagamento Efetuado" class="sortable-list space-y-3 h-full"></div></div>
+                        <div class="kanban-column"><h3 class="text-xs font-bold mb-4 uppercase text-gray-500">Vistoria</h3><div id="col-vistoria" data-status="Fazer Vistoria" class="sortable-list space-y-3 h-full"></div></div>
+                        <div class="kanban-column"><h3 class="text-xs font-bold mb-4 uppercase text-gray-500">Boletos</h3><div id="col-boletos" data-status="Mandar Boletos" class="sortable-list space-y-3 h-full"></div></div>
+                        <div class="kanban-column"><h3 class="text-xs font-bold mb-4 uppercase text-gray-500">Pagamento</h3><div id="col-pagamento" data-status="Falta Pagamento" class="sortable-list space-y-3 h-full"></div></div>
+                        <div class="kanban-column"><h3 class="text-xs font-bold mb-4 uppercase text-gray-500">Concluído</h3><div id="col-concluido" data-status="Pagamento Efetuado" class="sortable-list space-y-3 h-full"></div></div>
                     </div>
                 </div>
 
-                <!-- TABELA VENDAS -->
-                <div id="vendas" class="section">
-                    <div class="bg-gray-800 rounded-xl overflow-hidden border border-gray-700">
-                        <table class="w-full text-left text-xs uppercase">
-                            <thead class="bg-gray-700 text-gray-400">
-                                <tr>
-                                    <th class="p-4">Cliente</th><th class="p-4">Vendedor</th><th class="p-4">Prêmio</th><th class="p-4">Comissão (15%)</th><th class="p-4">Status</th><th class="p-4 text-center">Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tableVendas"></tbody>
-                        </table>
+                <!-- VENDEDORES (LISTAGEM) -->
+                <div id="vendedores" class="section">
+                    <h2 class="text-xl font-bold mb-6 uppercase tracking-widest">Equipe de Vendas</h2>
+                    <div id="gridVendedores" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+                </div>
+
+                <!-- CONFIGURAÇÕES (EDIÇÃO DE VENDEDORES) -->
+                <div id="configuracoes" class="section">
+                    <h2 class="text-xl font-bold mb-6 uppercase tracking-widest text-blue-500">Configurações do Sistema</h2>
+                    <div class="bg-gray-800 rounded-2xl border border-gray-700 p-6 shadow-2xl">
+                        <h3 class="text-sm font-bold uppercase text-gray-400 mb-4">Gerenciar Logins e Acessos</h3>
+                        <div id="listaConfigUsuarios" class="space-y-4"></div>
                     </div>
                 </div>
 
-                <!-- INDICACAO -->
-                <div id="indicacoes" class="section">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-xl font-bold uppercase text-blue-500">Indicações</h2>
-                        <button onclick="openModal('modalLead')" class="bg-blue-600 px-6 py-2 rounded font-bold text-xs uppercase">+ Novo Lead</button>
-                    </div>
-                    <div id="leadsGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
-                </div>
+                <!-- PLACEHOLDERS PARA OUTRAS ABAS -->
+                <div id="kanban-indicacoes" class="section text-center py-20 text-gray-500 uppercase font-bold tracking-widest">Fluxo de Indicações em Construção</div>
+                <div id="indicacoes" class="section text-center py-20 text-gray-500 uppercase font-bold tracking-widest">Base de Indicações em Construção</div>
+                <div id="vendas" class="section text-center py-20 text-gray-500 uppercase font-bold tracking-widest">Relatórios de Vendas em Construção</div>
+                <div id="comissao" class="section text-center py-20 text-gray-500 uppercase font-bold tracking-widest">Cálculo de Comissões em Construção</div>
+                <div id="cancelamentos" class="section text-center py-20 text-gray-500 uppercase font-bold tracking-widest">Gestão de Cancelamentos em Construção</div>
+                <div id="relatorios" class="section text-center py-20 text-gray-500 uppercase font-bold tracking-widest">Módulo de Relatórios em Construção</div>
+                <div id="links-uteis" class="section text-center py-20 text-gray-500 uppercase font-bold tracking-widest">Links Externos em Construção</div>
+                <div id="sem-sucesso" class="section text-center py-20 text-gray-500 uppercase font-bold tracking-widest">Arquivo de Leads Perdidos em Construção</div>
+                <div id="lembretes" class="section text-center py-20 text-gray-500 uppercase font-bold tracking-widest">Agenda Online em Construção</div>
+                <div id="lead-suhai" class="section text-center py-20 text-green-500 uppercase font-bold tracking-widest">API Integrada Suhai</div>
+
             </main>
+        </div>
+    </div>
+
+    <!-- MODAL EDITAR VENDEDOR -->
+    <div id="modalEditUser" class="fixed inset-0 bg-black/95 hidden items-center justify-center z-[100] p-4">
+        <div class="bg-gray-800 p-6 rounded-2xl w-full max-w-md border border-gray-700">
+            <h3 class="text-lg font-bold mb-4 uppercase text-blue-400">Editar Vendedor</h3>
+            <form id="formEditUser" class="space-y-4">
+                <input type="hidden" id="editUserId">
+                <div>
+                    <label class="text-[10px] uppercase font-bold text-gray-500">Nome do Vendedor</label>
+                    <input type="text" id="editUserName" class="w-full p-3 bg-gray-900 rounded border border-gray-700 text-white outline-none uppercase">
+                </div>
+                <div>
+                    <label class="text-[10px] uppercase font-bold text-gray-500">Setor / Cargo</label>
+                    <input type="text" id="editUserSector" class="w-full p-3 bg-gray-900 rounded border border-gray-700 text-white outline-none uppercase">
+                </div>
+                <div>
+                    <label class="text-[10px] uppercase font-bold text-gray-500">Nova Senha</label>
+                    <input type="text" id="editUserPass" class="w-full p-3 bg-gray-900 rounded border border-gray-700 text-white outline-none">
+                </div>
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button type="button" onclick="closeModal('modalEditUser')" class="p-3 text-gray-500 font-bold uppercase text-xs">Cancelar</button>
+                    <button type="submit" class="bg-blue-600 px-6 py-3 rounded font-bold uppercase text-xs">Salvar Alterações</button>
+                </div>
+            </form>
         </div>
     </div>
 
     <!-- MODAL VENDA -->
     <div id="modalVenda" class="fixed inset-0 bg-black/95 hidden items-center justify-center z-[100] p-4">
         <div class="bg-gray-800 p-6 rounded-2xl w-full max-w-md border border-gray-700">
-            <h3 class="text-lg font-bold mb-4 uppercase text-blue-400">Lançar Venda Cloud</h3>
+            <h3 class="text-lg font-bold mb-4 uppercase text-blue-400">Nova Venda Cloud</h3>
             <form id="formVenda" class="space-y-4">
-                <input type="text" id="v_cliente" placeholder="NOME DO CLIENTE" class="w-full p-3 bg-gray-900 rounded border border-gray-700 text-white uppercase">
-                <select id="v_empresa" class="w-full p-3 bg-gray-900 rounded border border-gray-700 text-white">
+                <input type="text" id="v_cliente" placeholder="CLIENTE" class="w-full p-3 bg-gray-900 rounded border border-gray-700 text-white uppercase outline-none focus:border-blue-500">
+                <select id="v_empresa" class="w-full p-3 bg-gray-900 rounded border border-gray-700 text-white uppercase outline-none">
                     <option>Porto Seguro</option><option>Azul Seguros</option><option>Bradesco</option><option>Suhai</option><option>HDI</option><option>Tokio Marine</option>
                 </select>
-                <select id="v_vendedor" class="w-full p-3 bg-gray-900 rounded border border-gray-700 text-white">
-                    <option>Igor Vicente</option><option>Jessica Regis</option><option>Luana Vieira</option><option>Leonardo Ferreira</option><option>Mados</option><option>Ana Beatriz</option><option>Elen Jaconis</option>
+                <select id="v_vendedor" class="w-full p-3 bg-gray-900 rounded border border-gray-700 text-white uppercase outline-none">
+                    <!-- Dinâmico -->
                 </select>
-                <input type="number" id="v_valor" placeholder="VALOR DO PRÊMIO (R$)" class="w-full p-3 bg-gray-900 rounded border border-gray-700 text-white">
-                <select id="v_status" class="w-full p-3 bg-gray-900 rounded border border-gray-700 text-white">
+                <input type="number" id="v_valor" placeholder="VALOR (R$)" class="w-full p-3 bg-gray-900 rounded border border-gray-700 text-white outline-none">
+                <select id="v_status" class="w-full p-3 bg-gray-900 rounded border border-gray-700 text-white uppercase outline-none">
                     <option>Fazer Vistoria</option><option>Mandar Boletos</option><option>Falta Pagamento</option><option>Pagamento Efetuado</option>
                 </select>
-                <div class="flex justify-end space-x-3 mt-4">
-                    <button type="button" onclick="closeModal('modalVenda')" class="p-3 text-gray-500 font-bold uppercase text-xs">Cancelar</button>
-                    <button type="submit" id="btnSaveVenda" class="bg-blue-600 px-6 py-3 rounded font-bold uppercase text-xs">Salvar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL LEAD -->
-    <div id="modalLead" class="fixed inset-0 bg-black/95 hidden items-center justify-center z-[100] p-4">
-        <div class="bg-gray-800 p-6 rounded-2xl w-full max-w-md border border-gray-700">
-            <h3 class="text-lg font-bold mb-4 uppercase text-blue-400">Nova Indicação</h3>
-            <form id="formLead" class="space-y-4">
-                <input type="text" id="l_nome" placeholder="NOME DO LEAD" class="w-full p-3 bg-gray-900 rounded border border-gray-700 text-white uppercase">
-                <input type="text" id="l_tel" placeholder="WHATSAPP (DDD + NÚMERO)" class="w-full p-3 bg-gray-900 rounded border border-gray-700 text-white">
-                <div class="flex justify-end space-x-3 mt-4">
-                    <button type="button" onclick="closeModal('modalLead')" class="p-3 text-gray-500 font-bold uppercase text-xs">Cancelar</button>
-                    <button type="submit" id="btnSaveLead" class="bg-blue-600 px-6 py-3 rounded font-bold uppercase text-xs">Adicionar</button>
-                </div>
+                <button type="submit" class="w-full bg-blue-600 p-4 rounded font-bold uppercase text-xs mt-4">Gravar na Nuvem</button>
+                <button type="button" onclick="closeModal('modalVenda')" class="w-full text-gray-500 text-xs mt-2 uppercase font-bold">Cancelar</button>
             </form>
         </div>
     </div>
@@ -163,7 +192,7 @@
     <!-- SCRIPT FIREBASE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc, setDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDvlpoHOKyRXmNG3RVYiTspOQ3TxsHH03s",
@@ -179,58 +208,61 @@
 
         window.cloud = {
             vendas: [],
-            leads: [],
-            async salvarVenda(dados) { await addDoc(collection(db, "vendas"), { ...dados, dataCriacao: Date.now() }); },
-            async salvarLead(dados) { await addDoc(collection(db, "leads"), { ...dados, dataCriacao: Date.now() }); },
-            async atualizarStatusVenda(id, novoStatus) { await updateDoc(doc(db, "vendas", id), { status: novoStatus }); },
-            async excluir(col, id) { if(confirm("Deseja excluir?")) await deleteDoc(doc(db, col, id)); }
+            usuarios: [],
+            async seedUsuarios() {
+                const snap = await getDocs(collection(db, "usuarios"));
+                if(snap.empty) {
+                    const iniciais = [
+                        { nome: "RODRIGO MARIANO", setor: "VENDAS", login: "rodrigo", senha: "123" },
+                        { nome: "LUANA VIEIRA", setor: "VENDAS", login: "luana", senha: "123" },
+                        { nome: "ANA BEATRIZ", setor: "VENDAS", login: "ana", senha: "123" },
+                        { nome: "JESSICA REGIS", setor: "VENDAS", login: "jessica", senha: "123" },
+                        { nome: "IGOR VICENTE", setor: "DIRETORIA", login: "admin", senha: "admin123" }
+                    ];
+                    for(let u of iniciais) await addDoc(collection(db, "usuarios"), u);
+                }
+            },
+            async salvarVenda(d) { await addDoc(collection(db, "vendas"), { ...d, dataCriacao: Date.now() }); },
+            async atualizarVenda(id, status) { await updateDoc(doc(db, "vendas", id), { status }); },
+            async atualizarUsuario(id, dados) { await updateDoc(doc(db, "usuarios", id), dados); },
+            async excluir(col, id) { if(confirm("Apagar da nuvem?")) await deleteDoc(doc(db, col, id)); }
         };
 
+        // Escutas em Tempo Real
         onSnapshot(query(collection(db, "vendas"), orderBy("dataCriacao", "desc")), (snap) => {
             window.cloud.vendas = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-            if(window.isLoggedIn) renderAll();
+            renderAll();
         });
 
-        onSnapshot(query(collection(db, "leads"), orderBy("dataCriacao", "desc")), (snap) => {
-            window.cloud.leads = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-            if(window.isLoggedIn) renderAll();
+        onSnapshot(collection(db, "usuarios"), (snap) => {
+            window.cloud.usuarios = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            renderAll();
         });
+
+        window.cloud.seedUsuarios();
     </script>
 
     <script>
-        const CREDENCIAIS = { 'admin': 'admin123', 'igor.vicente': 'real123', 'mados': 'mados123', 'jessica.regis': 'jessica123', 'luana.vieira': 'luana123', 'ana.beatriz': 'ana123' };
-        window.isLoggedIn = false;
+        window.userLogado = null;
 
         function handleLogin() {
-            const u = document.getElementById('username').value.trim().toLowerCase();
-            const p = document.getElementById('password').value.trim();
-            
-            if (CREDENCIAIS[u] && CREDENCIAIS[u] === p) {
-                window.isLoggedIn = true;
+            const uInput = document.getElementById('username').value.trim().toLowerCase();
+            const pInput = document.getElementById('password').value.trim();
+            const error = document.getElementById('loginError');
+
+            const user = window.cloud.usuarios.find(u => u.login === uInput && u.senha === pInput);
+
+            if(user) {
+                window.userLogado = user;
                 document.getElementById('loginScreen').classList.add('hidden');
                 document.getElementById('crmSystem').classList.remove('hidden');
-                document.getElementById('userDisplay').textContent = u;
+                document.getElementById('userDisplay').textContent = user.nome;
                 initSortable();
                 renderAll();
             } else {
-                const err = document.getElementById('errorMessage');
-                err.classList.remove('hidden');
-                setTimeout(() => err.classList.add('hidden'), 3000);
+                error.classList.remove('hidden');
+                setTimeout(() => error.classList.add('hidden'), 3000);
             }
-        }
-
-        function initSortable() {
-            const cols = document.querySelectorAll('.sortable-list');
-            cols.forEach(col => {
-                new Sortable(col, {
-                    group: 'vCloud', animation: 200, ghostClass: 'sortable-ghost',
-                    onEnd: async (evt) => {
-                        const id = evt.item.getAttribute('data-id');
-                        const status = evt.to.getAttribute('data-status');
-                        if(window.cloud) await window.cloud.atualizarStatusVenda(id, status);
-                    }
-                });
-            });
         }
 
         function showSection(id, btn) {
@@ -245,53 +277,85 @@
 
         function renderAll() {
             if(!window.cloud) return;
-            const { vendas, leads } = window.cloud;
-            const total = vendas.reduce((a, b) => a + parseFloat(b.valor || 0), 0);
+            const { vendas, usuarios } = window.cloud;
 
+            // Dashboard Stats
+            const totalVal = vendas.reduce((a, b) => a + parseFloat(b.valor || 0), 0);
             document.getElementById('dashVendas').textContent = vendas.length;
-            document.getElementById('dashPremio').textContent = total.toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
+            document.getElementById('dashPremio').textContent = totalVal.toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
 
-            // Tabelas
-            document.getElementById('tableVendas').innerHTML = vendas.map(v => `
-                <tr class="border-b border-gray-700">
-                    <td class="p-4 font-bold text-white uppercase">${v.cliente}</td>
-                    <td class="p-4 text-gray-400 uppercase text-[9px] font-bold text-blue-400">${v.vendedor}</td>
-                    <td class="p-4 text-green-500 font-bold">R$ ${parseFloat(v.valor || 0).toLocaleString()}</td>
-                    <td class="p-4 text-yellow-600 font-bold">R$ ${(v.valor * 0.15).toLocaleString()}</td>
-                    <td class="p-4"><span class="bg-gray-700 text-[8px] px-2 py-1 rounded text-gray-300">${v.status}</span></td>
-                    <td class="p-4 text-center"><button onclick="window.cloud.excluir('vendas','${v.id}')" class="text-red-500"><i class="fas fa-trash"></i></button></td>
-                </tr>
-            `).join('');
+            // Select de Vendedores no Modal
+            document.getElementById('v_vendedor').innerHTML = usuarios.map(u => `<option>${u.nome}</option>`).join('');
 
-            // Kanban
-            const cols = ['Fazer Vistoria', 'Mandar Boletos', 'Falta Pagamento', 'Pagamento Efetuado'];
-            cols.forEach(c => {
-                const idContainer = c === 'Fazer Vistoria' ? 'col-vistoria' : c === 'Mandar Boletos' ? 'col-boletos' : c === 'Falta Pagamento' ? 'col-pagamento' : 'col-concluido';
-                const el = document.getElementById(idContainer);
-                if(el) {
-                    el.innerHTML = vendas.filter(v => v.status === c).map(v => `
-                        <div class="bg-gray-800 p-4 rounded shadow border-l-4 border-blue-500" data-id="${v.id}">
-                            <p class="text-[11px] font-bold text-white uppercase">${v.cliente}</p>
-                            <p class="text-[8px] text-gray-500 uppercase font-bold mt-1">${v.vendedor}</p>
-                            <div class="mt-2 text-[10px] font-bold text-green-500">R$ ${parseFloat(v.valor || 0).toLocaleString()}</div>
-                        </div>
-                    `).join('');
-                }
+            // Kanban Vendas
+            const cols = ['col-vistoria', 'col-boletos', 'col-pagamento', 'col-concluido'];
+            const statusMap = ['Fazer Vistoria', 'Mandar Boletos', 'Falta Pagamento', 'Pagamento Efetuado'];
+            cols.forEach((id, idx) => {
+                const el = document.getElementById(id);
+                if(el) el.innerHTML = vendas.filter(v => v.status === statusMap[idx]).map(v => `
+                    <div class="bg-gray-800 p-4 rounded-lg shadow-xl border-l-4 border-blue-500" data-id="${v.id}">
+                        <p class="text-[11px] font-bold text-white uppercase">${v.cliente}</p>
+                        <p class="text-[9px] text-gray-500 uppercase mt-1">${v.vendedor} | ${v.empresa}</p>
+                        <div class="mt-2 text-[10px] font-bold text-green-500">R$ ${parseFloat(v.valor).toLocaleString()}</div>
+                        <div class="text-[9px] text-yellow-600 font-bold tracking-tighter">COMISSÃO: R$ ${(v.valor * 0.15).toLocaleString()}</div>
+                    </div>
+                `).join('');
             });
 
-            // Leads
-            document.getElementById('leadsGrid').innerHTML = leads.map(l => `
-                <div class="bg-gray-800 p-4 rounded border border-gray-700">
-                    <h4 class="font-bold text-white uppercase text-sm">${l.nome}</h4>
-                    <p class="text-blue-400 text-xs mb-3 font-bold">${l.tel}</p>
-                    <div class="flex space-x-2">
-                        <a href="https://wa.me/55${l.tel.replace(/\D/g,'')}" target="_blank" class="flex-1 bg-green-600 text-center py-2 rounded text-[10px] font-bold uppercase">WhatsApp</a>
-                        <button onclick="window.cloud.excluir('leads','${l.id}')" class="text-red-500 bg-gray-700 px-2 rounded"><i class="fas fa-trash"></i></button>
+            // Aba Vendedores
+            document.getElementById('gridVendedores').innerHTML = usuarios.map(u => `
+                <div class="bg-gray-800 p-6 rounded-2xl border border-gray-700 text-center shadow-xl">
+                    <div class="w-16 h-16 bg-blue-900 text-blue-400 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">${u.nome[0]}</div>
+                    <h4 class="font-bold text-white uppercase">${u.nome}</h4>
+                    <p class="text-[10px] text-gray-500 uppercase font-bold">${u.setor}</p>
+                </div>
+            `).join('');
+
+            // Aba Configurações (Edição)
+            document.getElementById('listaConfigUsuarios').innerHTML = usuarios.map(u => `
+                <div class="flex items-center justify-between p-4 bg-gray-900 rounded-xl border border-gray-700">
+                    <div>
+                        <p class="font-bold text-sm uppercase">${u.nome}</p>
+                        <p class="text-[10px] text-gray-500">Login: ${u.login} | Senha: ****</p>
                     </div>
+                    <button onclick="preparaEdicaoUsuario('${u.id}')" class="bg-blue-600/20 text-blue-400 px-4 py-2 rounded-lg text-[10px] font-bold uppercase hover:bg-blue-600 hover:text-white transition">Editar Acesso</button>
                 </div>
             `).join('');
 
             updateCharts(vendas);
+        }
+
+        function preparaEdicaoUsuario(id) {
+            const user = window.cloud.usuarios.find(u => u.id === id);
+            document.getElementById('editUserId').value = user.id;
+            document.getElementById('editUserName').value = user.nome;
+            document.getElementById('editUserSector').value = user.setor;
+            document.getElementById('editUserPass').value = user.senha;
+            openModal('modalEditUser');
+        }
+
+        document.getElementById('formEditUser').onsubmit = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('editUserId').value;
+            await window.cloud.atualizarUsuario(id, {
+                nome: document.getElementById('editUserName').value.toUpperCase(),
+                setor: document.getElementById('editUserSector').value.toUpperCase(),
+                senha: document.getElementById('editUserPass').value
+            });
+            closeModal('modalEditUser');
+        };
+
+        function initSortable() {
+            document.querySelectorAll('.sortable-list').forEach(col => {
+                new Sortable(col, {
+                    group: 'vendasCloud', animation: 200, ghostClass: 'sortable-ghost',
+                    onEnd: async (evt) => {
+                        const id = evt.item.getAttribute('data-id');
+                        const status = evt.to.getAttribute('data-status');
+                        await window.cloud.atualizarVenda(id, status);
+                    }
+                });
+            });
         }
 
         document.getElementById('formVenda').onsubmit = async (e) => {
@@ -306,21 +370,15 @@
             closeModal('modalVenda'); e.target.reset();
         };
 
-        document.getElementById('formLead').onsubmit = async (e) => {
-            e.preventDefault();
-            await window.cloud.salvarLead({ nome: document.getElementById('l_nome').value.toUpperCase(), tel: document.getElementById('l_tel').value });
-            closeModal('modalLead'); e.target.reset();
-        };
-
         let ch1, ch2;
         function updateCharts(vendas) {
             const ctx1 = document.getElementById('chartVendedores').getContext('2d');
             const ctx2 = document.getElementById('chartEmpresas').getContext('2d');
             if(ch1) ch1.destroy(); if(ch2) ch2.destroy();
-            const vData = {}; vendas.forEach(v => vData[v.vendedor] = (vData[v.vendedor] || 0) + parseFloat(v.valor || 0));
+            const vData = {}; vendas.forEach(v => vData[v.vendedor] = (vData[v.vendedor] || 0) + parseFloat(v.valor));
             const eData = {}; vendas.forEach(v => eData[v.empresa] = (eData[v.empresa] || 0) + 1);
-            ch1 = new Chart(ctx1, { type: 'bar', data: { labels: Object.keys(vData), datasets: [{ label:'R$', data: Object.values(vData), backgroundColor:'#3b82f6' }] }, options:{plugins:{legend:{display:false}}, scales:{y:{grid:{display:false}}, x:{grid:{display:false}}}} });
-            ch2 = new Chart(ctx2, { type: 'doughnut', data: { labels: Object.keys(eData), datasets: [{ data: Object.values(eData), backgroundColor:['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'] }] }, options:{plugins:{legend:{position:'bottom', labels:{color:'#9ca3af'}}}} });
+            ch1 = new Chart(ctx1, { type: 'bar', data: { labels: Object.keys(vData), datasets: [{ label:'Prêmio R$', data: Object.values(vData), backgroundColor:'#3b82f6' }] }, options:{plugins:{legend:{display:false}}, scales:{y:{grid:{display:false}, ticks:{color:'#555'}}, x:{grid:{display:false}, ticks:{color:'#555'}}}} });
+            ch2 = new Chart(ctx2, { type: 'doughnut', data: { labels: Object.keys(eData), datasets: [{ data: Object.values(eData), backgroundColor:['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'] }] }, options:{plugins:{legend:{position:'bottom', labels:{color:'#555', font:{size:10}}}}} });
         }
     </script>
 </body>
