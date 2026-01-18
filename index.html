@@ -202,4 +202,371 @@
     <div id="modalVenda" class="fixed inset-0 bg-black/95 hidden items-center justify-center z-[100] p-4">
         <div class="bg-gray-800 p-6 rounded-2xl w-full max-w-md border border-gray-700 shadow-2xl">
             <h3 class="text-lg font-bold mb-6 uppercase text-blue-400">Nova Venda</h3>
-            <form id="formVenda" cla
+            <form id="formVenda" class="space-y-4">
+                <input type="text" id="v_cliente" placeholder="NOME DO CLIENTE" class="w-full p-3 bg-gray-900 border border-gray-700 rounded text-white uppercase outline-none">
+                <select id="v_empresa" class="w-full p-3 bg-gray-900 border border-gray-700 rounded text-white uppercase outline-none">
+                    <option>Porto Seguro</option><option>Azul Seguros</option><option>Bradesco</option><option>Suhai</option><option>HDI</option><option>Tokio Marine</option>
+                </select>
+                <div id="vendedorSelectContainer">
+                   <label class="text-[10px] font-bold text-gray-500">VENDEDOR RESPONSÁVEL</label>
+                   <select id="v_vendedor" class="w-full p-3 bg-gray-900 border border-gray-700 rounded text-white uppercase outline-none"></select>
+                </div>
+                <input type="number" id="v_valor" placeholder="VALOR DO PRÊMIO (R$)" class="w-full p-3 bg-gray-900 border border-gray-700 rounded text-white outline-none">
+                <select id="v_status" class="w-full p-3 bg-gray-900 border border-gray-700 rounded text-white uppercase">
+                    <option>Fazer Vistoria</option><option>Mandar Boletos</option><option>Falta Pagamento</option><option>Pagamento Efetuado</option>
+                </select>
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button type="button" onclick="closeModal('modalVenda')" class="p-3 text-gray-500 uppercase text-xs font-bold">Cancelar</button>
+                    <button type="submit" class="bg-blue-600 px-6 py-3 rounded font-bold uppercase text-xs">Lançar Agora</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalLead" class="fixed inset-0 bg-black/95 hidden items-center justify-center z-[100] p-4">
+        <div class="bg-gray-800 p-6 rounded-2xl w-full max-w-md border border-gray-700 shadow-2xl">
+            <h3 class="text-lg font-bold mb-6 uppercase text-blue-400">Nova Indicação</h3>
+            <form id="formLead" class="space-y-4">
+                <input type="text" id="l_nome" placeholder="NOME DO LEAD" class="w-full p-3 bg-gray-900 border border-gray-700 rounded text-white uppercase outline-none">
+                <input type="text" id="l_tel" placeholder="WHATSAPP" class="w-full p-3 bg-gray-900 border border-gray-700 rounded text-white outline-none">
+                <label class="text-[10px] font-bold text-gray-500">ENCAMINHAR PARA VENDEDOR</label>
+                <select id="l_vendedor" class="w-full p-3 bg-gray-900 border border-gray-700 rounded text-white uppercase outline-none"></select>
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button type="button" onclick="closeModal('modalLead')" class="p-3 text-gray-500 uppercase text-xs font-bold">Cancelar</button>
+                    <button type="submit" class="bg-blue-600 px-6 py-3 rounded font-bold uppercase text-xs">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalEditUser" class="fixed inset-0 bg-black/95 hidden items-center justify-center z-[100] p-4">
+        <div class="bg-gray-800 p-6 rounded-2xl w-full max-w-md border border-gray-700 shadow-2xl">
+            <h3 class="text-lg font-bold mb-6 uppercase text-yellow-500">Editar Vendedor</h3>
+            <form id="formEditUser" class="space-y-4">
+                <input type="hidden" id="editUserId">
+                <input type="text" id="editUserName" class="w-full p-3 bg-gray-900 border border-gray-700 rounded text-white uppercase">
+                <select id="editUserSector" class="w-full p-3 bg-gray-900 border border-gray-700 rounded text-white uppercase"></select>
+                <input type="text" id="editUserPass" placeholder="NOVA SENHA" class="w-full p-3 bg-gray-900 border border-gray-700 rounded text-white">
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button type="button" onclick="closeModal('modalEditUser')" class="p-3 text-gray-500 uppercase text-xs font-bold">Voltar</button>
+                    <button type="submit" class="bg-green-600 px-6 py-3 rounded font-bold uppercase text-xs">Atualizar Acesso</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SCRIPTS FIREBASE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDvlpoHOKyRXmNG3RVYiTspOQ3TxsHH03s",
+            authDomain: "vm-seguros-crm.firebaseapp.com",
+            projectId: "vm-seguros-crm",
+            storageBucket: "vm-seguros-crm.firebasestorage.app",
+            messagingSenderId: "420895990730",
+            appId: "1:420895990730:web:f6c753d929d84b5330e533"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.cloud = {
+            vendas: [], usuarios: [], setores: [], leads: [],
+            async salvarVenda(d) { await addDoc(collection(db, "vendas"), { ...d, dataCriacao: Date.now() }); },
+            async salvarLead(d) { await addDoc(collection(db, "leads"), { ...d, dataCriacao: Date.now() }); },
+            async salvarSetor(n) { await addDoc(collection(db, "setores"), { nome: n.toUpperCase() }); },
+            async salvarUsuario(d) { await addDoc(collection(db, "usuarios"), d); },
+            async atualizarUsuario(id, d) { await updateDoc(doc(db, "usuarios", id), d); },
+            async atualizarVenda(id, s) { await updateDoc(doc(db, "vendas", id), { status: s }); },
+            async excluir(col, id) { if(confirm("Confirmar exclusão online?")) await deleteDoc(doc(db, col, id)); },
+            async excluirLote(col, ids) {
+                if(confirm(`Deseja apagar ${ids.length} itens da nuvem?`)) {
+                    const batch = writeBatch(db);
+                    ids.forEach(id => batch.delete(doc(db, col, id)));
+                    await batch.commit();
+                }
+            }
+        };
+
+        onSnapshot(query(collection(db, "vendas"), orderBy("dataCriacao", "desc")), snap => { window.cloud.vendas = snap.docs.map(d => ({id: d.id, ...d.data()})); renderAll(); });
+        onSnapshot(collection(db, "usuarios"), snap => { window.cloud.usuarios = snap.docs.map(d => ({id: d.id, ...d.data()})); renderAll(); });
+        onSnapshot(collection(db, "setores"), snap => { window.cloud.setores = snap.docs.map(d => ({id: d.id, ...d.data()})); renderAll(); });
+        onSnapshot(collection(db, "leads"), snap => { window.cloud.leads = snap.docs.map(d => ({id: d.id, ...d.data()})); renderAll(); });
+    </script>
+
+    <script>
+        let currentUser = null;
+        let selectedItems = { vendas: [], leads: [] };
+
+        function handleLogin() {
+            const uI = document.getElementById('username').value.trim().toLowerCase();
+            const pI = document.getElementById('password').value.trim();
+            
+            // Especial admin bypass (opcional, mas bom ter um master)
+            if(uI === 'admin' && pI === 'admin123') {
+                currentUser = { nome: 'ADMINISTRADOR', login: 'admin', setor: 'DIRETORIA', isAdmin: true };
+            } else {
+                const found = window.cloud.usuarios.find(u => u.login === uI && u.senha === pI);
+                if(found) {
+                    currentUser = { ...found, isAdmin: (found.setor === 'DIRETORIA' || found.setor === 'ADMIN') };
+                }
+            }
+
+            if(currentUser) {
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('crmSystem').classList.remove('hidden');
+                document.getElementById('userDisplay').textContent = currentUser.nome;
+                
+                // Configurar Sidebar por Permissão
+                if(currentUser.isAdmin) {
+                    document.getElementById('adminNavGroup').classList.remove('hidden');
+                    document.getElementById('adminNavGroup2').classList.remove('hidden');
+                    document.getElementById('adminNavGroup3').classList.remove('hidden');
+                    document.getElementById('boxAdminExtra').classList.remove('hidden');
+                }
+
+                initSortable();
+                renderAll();
+            } else {
+                const err = document.getElementById('loginError');
+                err.classList.remove('hidden');
+                setTimeout(() => err.classList.add('hidden'), 3000);
+            }
+        }
+
+        function renderAll() {
+            if(!window.cloud || !currentUser) return;
+
+            // FILTRAGEM INTELIGENTE DE DADOS
+            const allVendas = window.cloud.vendas;
+            const allLeads = window.cloud.leads;
+            
+            const myVendas = currentUser.isAdmin ? allVendas : allVendas.filter(v => v.vendedor === currentUser.nome);
+            const myLeads = currentUser.isAdmin ? allLeads : allLeads.filter(l => l.vendedor === currentUser.nome);
+
+            // Dashboard
+            const myTotalPremio = myVendas.reduce((a,b) => a + parseFloat(b.valor || 0), 0);
+            const globalTotalPremio = allVendas.reduce((a,b) => a + parseFloat(b.valor || 0), 0);
+
+            document.getElementById('dashVendas').textContent = myVendas.length;
+            document.getElementById('dashPremio').textContent = myTotalPremio.toLocaleString('pt-BR', {style:'currency',currency:'BRL'});
+            if(currentUser.isAdmin) {
+                document.getElementById('dashTotalEquipe').textContent = globalTotalPremio.toLocaleString('pt-BR', {style:'currency',currency:'BRL'});
+                document.getElementById('dashTitle').textContent = "PAINEL DE CONTROLE GERAL";
+            } else {
+                document.getElementById('dashTitle').textContent = "MEU DESEMPENHO";
+            }
+
+            // Alimentar Dropdowns de Vendedores (Modais)
+            const vOptions = window.cloud.usuarios.map(u => `<option>${u.nome}</option>`).join('');
+            document.getElementById('v_vendedor').innerHTML = vOptions;
+            document.getElementById('l_vendedor').innerHTML = vOptions;
+
+            // Se for Vendedor logado, trava o select no nome dele por padrão
+            if(!currentUser.isAdmin) {
+                document.getElementById('v_vendedor').value = currentUser.nome;
+                document.getElementById('vendedorSelectContainer').classList.add('hidden'); // Vendedor não troca o dono da venda
+                document.getElementById('l_vendedor').value = currentUser.nome;
+            }
+
+            // Tabelas
+            renderTabelaLeads(myLeads);
+            renderKanban(myVendas);
+            
+            if(currentUser.isAdmin) {
+                renderConfigEquipe();
+                renderSetores();
+                renderAbaVendedores();
+            }
+
+            updateCharts(myVendas, allVendas);
+        }
+
+        function renderTabelaLeads(leads) {
+            document.getElementById('tableLeads').innerHTML = leads.map(l => `
+                <tr class="border-b border-gray-700 hover:bg-gray-800 transition">
+                    <td class="p-4"><input type="checkbox" onchange="toggleItem('leads','${l.id}')" ${selectedItems.leads.includes(l.id) ? 'checked' : ''}></td>
+                    <td class="p-4 font-bold text-white uppercase text-xs">${l.nome}</td>
+                    <td class="p-4 text-blue-400 font-bold text-xs">${l.tel}</td>
+                    <td class="p-4 text-gray-500 font-bold text-[10px] uppercase">${l.vendedor}</td>
+                    <td class="p-4 text-center">
+                        <button onclick="window.cloud.excluir('leads','${l.id}')" class="text-red-500 hover:scale-125 transition"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderKanban(vendas) {
+            const statusMap = ['Fazer Vistoria', 'Mandar Boletos', 'Falta Pagamento', 'Pagamento Efetuado'];
+            ['col-vistoria', 'col-boletos', 'col-pagamento', 'col-concluido'].forEach((id, idx) => {
+                const el = document.getElementById(id);
+                if(el) el.innerHTML = vendas.filter(v => v.status === statusMap[idx]).map(v => `
+                    <div class="bg-gray-800 p-4 rounded-lg shadow-xl border-l-4 border-blue-500 mb-3" data-id="${v.id}">
+                        <p class="text-[11px] font-bold text-white uppercase leading-tight">${v.cliente}</p>
+                        <p class="text-[9px] text-gray-500 uppercase font-bold mt-1">${v.empresa}</p>
+                        <div class="mt-4 pt-2 border-t border-gray-700 flex justify-between items-center">
+                            <span class="text-green-500 font-bold text-[11px]">R$ ${parseFloat(v.valor).toLocaleString()}</span>
+                            <span class="text-yellow-600 font-bold text-[9px]">R$ ${(v.valor * 0.15).toLocaleString()}</span>
+                        </div>
+                    </div>
+                `).join('');
+            });
+        }
+
+        function renderConfigEquipe() {
+            document.getElementById('listaConfigUsuarios').innerHTML = window.cloud.usuarios.map(u => `
+                <div class="bg-gray-900 p-4 rounded-xl border border-gray-700 flex justify-between items-center">
+                    <div><p class="font-bold text-xs text-white uppercase">${u.nome}</p><p class="text-[9px] text-gray-500 font-bold uppercase">${u.setor}</p></div>
+                    <div class="flex space-x-3">
+                        <button onclick="preparaEdicaoUsuario('${u.id}')" class="text-blue-500 text-[10px] font-bold uppercase hover:underline">Editar</button>
+                        <button onclick="window.cloud.excluir('usuarios','${u.id}')" class="text-red-500 text-[10px] font-bold uppercase hover:underline">Excluir</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderAbaVendedores() {
+            document.getElementById('gridVendedores').innerHTML = window.cloud.usuarios.map(u => `
+                <div class="bg-gray-800 p-6 rounded-2xl border border-gray-700 text-center shadow-2xl">
+                    <div class="w-12 h-12 bg-blue-900 text-blue-400 rounded-full flex items-center justify-center mx-auto mb-4 font-bold text-lg">${u.nome[0]}</div>
+                    <h4 class="font-bold text-xs text-white uppercase">${u.nome}</h4>
+                    <p class="text-[9px] text-gray-500 uppercase font-bold mt-1">${u.setor}</p>
+                </div>
+            `).join('');
+        }
+
+        function renderSetores() {
+            const list = document.getElementById('listaSetores');
+            const selectAdd = document.getElementById('addUserSector');
+            const selectEdit = document.getElementById('editUserSector');
+            
+            const options = window.cloud.setores.map(s => `<option>${s.nome}</option>`).join('');
+            selectAdd.innerHTML = options;
+            selectEdit.innerHTML = options;
+
+            list.innerHTML = window.cloud.setores.map(s => `
+                <div class="flex justify-between items-center p-2 bg-gray-900 rounded border border-gray-700 text-[10px] font-bold uppercase">
+                    <span>${s.nome}</span><button onclick="window.cloud.excluir('setores','${s.id}')" class="text-red-500 hover:scale-110 transition"><i class="fas fa-times"></i></button>
+                </div>
+            `).join('');
+        }
+
+        // Funções de Interface
+        function showSection(id, btn) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        function toggleItem(type, id) {
+            const idx = selectedItems[type].indexOf(id);
+            if(idx > -1) selectedItems[type].splice(idx, 1);
+            else selectedItems[type].push(id);
+            document.getElementById(type === 'leads' ? 'btnDeleteLeads' : 'btnDeleteVendas')?.classList.toggle('hidden', selectedItems[type].length === 0);
+        }
+
+        async function deleteMass(type) {
+            await window.cloud.excluirLote(type, selectedItems[type]);
+            selectedItems[type] = [];
+            renderAll();
+        }
+
+        // Formulários
+        document.getElementById('formAddSector').onsubmit = async (e) => {
+            e.preventDefault();
+            const n = document.getElementById('newSectorName').value;
+            if(n) await window.cloud.salvarSetor(n);
+            e.target.reset();
+        };
+
+        document.getElementById('formAddUser').onsubmit = async (e) => {
+            e.preventDefault();
+            await window.cloud.salvarUsuario({
+                nome: document.getElementById('addUserName').value.toUpperCase(),
+                login: document.getElementById('addUserLogin').value.trim().toLowerCase(),
+                senha: document.getElementById('addUserPass').value,
+                setor: document.getElementById('addUserSector').value
+            });
+            e.target.reset();
+        };
+
+        function preparaEdicaoUsuario(id) {
+            const u = window.cloud.usuarios.find(x => x.id === id);
+            document.getElementById('editUserId').value = u.id;
+            document.getElementById('editUserName').value = u.nome;
+            document.getElementById('editUserSector').value = u.setor;
+            document.getElementById('editUserPass').value = u.senha;
+            openModal('modalEditUser');
+        }
+
+        document.getElementById('formEditUser').onsubmit = async (e) => {
+            e.preventDefault();
+            await window.cloud.atualizarUsuario(document.getElementById('editUserId').value, {
+                nome: document.getElementById('editUserName').value.toUpperCase(),
+                setor: document.getElementById('editUserSector').value,
+                senha: document.getElementById('editUserPass').value
+            });
+            closeModal('modalEditUser');
+        };
+
+        document.getElementById('formVenda').onsubmit = async (e) => {
+            e.preventDefault();
+            await window.cloud.salvarVenda({
+                cliente: document.getElementById('v_cliente').value.toUpperCase(),
+                empresa: document.getElementById('v_empresa').value,
+                vendedor: document.getElementById('v_vendedor').value,
+                valor: document.getElementById('v_valor').value,
+                status: document.getElementById('v_status').value
+            });
+            closeModal('modalVenda'); e.target.reset();
+        };
+
+        document.getElementById('formLead').onsubmit = async (e) => {
+            e.preventDefault();
+            await window.cloud.salvarLead({
+                nome: document.getElementById('l_nome').value.toUpperCase(),
+                tel: document.getElementById('l_tel').value,
+                vendedor: document.getElementById('l_vendedor').value,
+                status: 'Lead Novo'
+            });
+            closeModal('modalLead'); e.target.reset();
+        };
+
+        function initSortable() {
+            document.querySelectorAll('.sortable-list').forEach(col => {
+                new Sortable(col, { group: 'vCloud', animation: 200, ghostClass: 'sortable-ghost',
+                    onEnd: async (evt) => { await window.cloud.atualizarVenda(evt.item.getAttribute('data-id'), evt.to.getAttribute('data-status')); }
+                });
+            });
+        }
+
+        let ch1, ch2;
+        function updateCharts(myVendas, allVendas) {
+            const ctx1 = document.getElementById('chartProducao').getContext('2d');
+            const ctx2 = document.getElementById('chartFases').getContext('2d');
+            if(ch1) ch1.destroy(); if(ch2) ch2.destroy();
+            
+            // Gráfico 1: Produção (Se for admin mostra equipe, se for vendedor mostra ele vs meta fixa de 20k)
+            let labels, data;
+            if(currentUser.isAdmin) {
+                const vData = {}; allVendas.forEach(v => vData[v.vendedor] = (vData[v.vendedor] || 0) + parseFloat(v.valor || 0));
+                labels = Object.keys(vData); data = Object.values(vData);
+            } else {
+                labels = ['Minha Produção', 'Meta Mensal'];
+                data = [myVendas.reduce((a,b) => a + parseFloat(b.valor || 0), 0), 20000];
+            }
+
+            const fData = {}; myVendas.forEach(v => fData[v.status] = (fData[v.status] || 0) + 1);
+
+            ch1 = new Chart(ctx1, { type: 'bar', data: { labels, datasets: [{ label:'Prêmio R$', data, backgroundColor:['#3b82f6','#1e293b'] }] }, options:{plugins:{legend:{display:false}}, scales:{y:{grid:{display:false}}, x:{grid:{display:false}}}} });
+            ch2 = new Chart(ctx2, { type: 'doughnut', data: { labels: Object.keys(fData), datasets: [{ data: Object.values(fData), backgroundColor:['#3b82f6','#f59e0b','#ef4444','#10b981'] }] }, options:{plugins:{legend:{position:'bottom', labels:{color:'#555', font:{size:10}}}}} });
+        }
+    </script>
+</body>
+</html>
