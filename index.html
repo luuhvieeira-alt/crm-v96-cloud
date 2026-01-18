@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VM SEGUROS - CRM CLOUD v96 PRO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Biblioteca para Arrastar e Soltar -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+    <style>
+        .scrollbar-thin::-webkit-scrollbar { width: 4px; }
+        .scrollbar-thin::-webkit-scrollbar-track { background: #1f2937; }
+        .scrollbar-thin::-webkit-scrollbar-thumb { background: #4b5563; }
+        .nav-item.active { background-color: #374151; color: white; border-left: 4px solid #3b82f6; }
+        .section { display: none; }
+        .section.active { display: block; animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
+        .kanban-column { min-height: 600px; background: #111827; border-radius: 12px; padding: 12px; border: 1px solid #374151; }
+        .suhai-indicator { animation: pulse-suhai 2s infinite; color: #10b981; }
+        @keyframes pulse-suhai { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .sortable-ghost { opacity: 0.4; background: #3b82f6 !important; }
+        .kanban-card { cursor: grab; transition: transform 0.2s; }
+        .kanban-card:active { cursor: grabbing; }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 font-sans">
+
+    <!-- Tela de Login -->
+    <div id="loginScreen" class="min-h-screen flex items-center justify-center bg-black">
+        <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-gray-700 text-center">
+            <i class="fas fa-shield-alt text-5xl text-blue-500 mb-4"></i>
+            <h1 class="text-2xl font-bold mb-6">VM SEGUROS CLOUD</h1>
+            <input type="text" id="username" placeholder="Usuário" class="w-full p-3 mb-4 bg-gray-700 rounded border border-gray-600 outline-none focus:border-blue-500 text-white">
+            <input type="password" id="password" placeholder="Senha" class="w-full p-3 mb-6 bg-gray-700 rounded border border-gray-600 outline-none focus:border-blue-500 text-white">
+            <button onclick="handleLogin()" class="w-full bg-blue-600 hover:bg-blue-700 p-3 rounded font-bold transition">ENTRAR NO SISTEMA</button>
+            <p class="text-xs mt-4 text-gray-500">
