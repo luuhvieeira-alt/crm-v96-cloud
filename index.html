@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VM SEGUROS - CLOUD v109</title>
+    <title>VM SEGUROS - CLOUD v110</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
@@ -29,12 +29,12 @@
 </head>
 <body class="bg-[#0b0f1a] text-gray-100 font-sans scrollbar-thin">
 
-    <!-- LOGIN SCREEN -->
+    <!-- LOGIN -->
     <div id="loginScreen" class="min-h-screen flex items-center justify-center bg-black">
         <div class="bg-[#111827] p-10 rounded-3xl shadow-2xl w-full max-w-md border border-gray-800 text-center">
             <i class="fas fa-shield-alt text-7xl text-blue-500 mb-6"></i>
-            <h1 class="text-3xl font-bold mb-2 uppercase tracking-tighter text-white font-mono">VM Seguros</h1>
-            <p class="text-gray-500 text-[10px] mb-8 uppercase font-bold tracking-[0.2em]">Cloud Security v109</p>
+            <h1 class="text-3xl font-bold mb-2 uppercase tracking-tighter text-white font-mono text-white">VM Seguros</h1>
+            <p class="text-gray-500 text-[10px] mb-8 uppercase font-bold tracking-[0.2em]">Cloud Security v110</p>
             <div class="space-y-4">
                 <input type="text" id="username" placeholder="USUÁRIO" class="w-full p-4 rounded-xl border outline-none text-center transition uppercase">
                 <input type="password" id="password" placeholder="SENHA" class="w-full p-4 rounded-xl border outline-none text-center transition">
@@ -48,7 +48,7 @@
         <header class="bg-[#111827] border-b border-gray-800 p-4 flex justify-between items-center sticky top-0 z-50">
             <div class="flex items-center space-x-3">
                 <i class="fas fa-cloud text-blue-500 text-2xl"></i>
-                <span class="font-bold text-xl uppercase tracking-tighter font-mono">VM Seguros <span class="text-blue-500 text-xs">v109</span></span>
+                <span class="font-bold text-xl uppercase tracking-tighter font-mono">VM Seguros <span class="text-blue-500 text-xs">v110</span></span>
             </div>
             <div id="userDisplay" class="text-xs font-bold text-blue-400 bg-blue-900/20 px-4 py-2 rounded-full uppercase"></div>
         </header>
@@ -77,26 +77,9 @@
 
             <main class="flex-1 p-6 overflow-y-auto bg-[#0b0f1a] scrollbar-thin">
                 
-                <!-- PRODUÇÃO -->
-                <div id="kanban-vendas" class="section">
-                    <div class="flex justify-between items-center mb-8">
-                        <h2 class="text-2xl font-bold uppercase text-blue-500 tracking-tighter">Produção</h2>
-                        <div class="flex gap-2">
-                            <button onclick="EXCLUIR_SELECIONADOS_MASSA('vendas')" class="bg-red-600/20 text-red-500 border border-red-600/50 px-4 py-2 rounded-xl font-bold text-[10px] uppercase hover:bg-red-600 hover:text-white transition">Deletar Selecionados</button>
-                            <button onclick="openModal('modalVenda')" class="bg-blue-600 px-6 py-2 rounded-xl font-bold text-[11px] uppercase">+ Produção</button>
-                        </div>
-                    </div>
-                    <div class="kanban-wrapper scrollbar-thin">
-                        <div class="kanban-column"><h3 class="text-[11px] font-black mb-6 uppercase text-gray-400 text-center border-b border-gray-800 pb-4">Vistoria</h3><div id="col-vistoria" data-status="Fazer Vistoria" class="sortable-list space-y-4 min-h-[500px]"></div></div>
-                        <div class="kanban-column"><h3 class="text-[11px] font-black mb-6 uppercase text-gray-400 text-center border-b border-gray-800 pb-4">Boletos</h3><div id="col-boletos" data-status="Mandar Boletos" class="sortable-list space-y-4 min-h-[500px]"></div></div>
-                        <div class="kanban-column"><h3 class="text-[11px] font-black mb-6 uppercase text-gray-400 text-center border-b border-gray-800 pb-4">Pagamento</h3><div id="col-pagamento" data-status="Falta Pagamento" class="sortable-list space-y-4 min-h-[500px]"></div></div>
-                        <div class="kanban-column"><h3 class="text-[11px] font-black mb-6 uppercase text-green-500 text-center border-b border-green-900 pb-4">Concluído</h3><div id="col-concluido" data-status="Pagamento Efetuado" class="sortable-list space-y-4 min-h-[500px]"></div></div>
-                    </div>
-                </div>
-
                 <!-- DASHBOARD -->
                 <div id="dashboard" class="section active">
-                    <h2 class="text-2xl font-bold uppercase mb-8 text-white">Dashboard</h2>
+                    <h2 class="text-2xl font-bold uppercase mb-8 text-white tracking-tighter">Resumo Geral</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="bg-[#111827] p-8 rounded-2xl border border-gray-800 text-center"><p class="text-gray-500 text-[10px] font-bold uppercase mb-2">Produções Ativas</p><h2 id="dashVendas" class="text-5xl font-bold text-white">0</h2></div>
                         <div class="bg-[#111827] p-8 rounded-2xl border border-gray-800 text-center"><p id="labelDashFin" class="text-gray-500 text-[10px] font-bold uppercase mb-2">Comissão Prevista</p><h2 id="dashComissao" class="text-5xl font-bold text-green-500">R$ 0,00</h2></div>
@@ -105,10 +88,10 @@
 
                 <!-- FINANCEIRO -->
                 <div id="comissao" class="section">
-                    <h2 class="text-2xl font-bold uppercase text-green-500 mb-8 tracking-tighter">Financeiro</h2>
+                    <h2 class="text-2xl font-bold uppercase text-green-500 mb-8 tracking-tighter">Financeiro Realizado</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-center">
-                        <div class="bg-[#111827] p-8 rounded-2xl border border-green-900/30"><p id="labelComissaoBox" class="text-gray-500 text-[10px] font-bold uppercase mb-2">Comissão Acumulada</p><h2 id="totalComissaoBox" class="text-5xl font-bold text-green-500">R$ 0,00</h2></div>
-                        <div class="bg-[#111827] p-8 rounded-2xl border border-gray-800"><p class="text-gray-500 text-[10px] font-bold uppercase mb-2">Volume Líquido</p><h2 id="totalPremioBox" class="text-5xl font-bold text-white">R$ 0,00</h2></div>
+                        <div class="bg-[#111827] p-8 rounded-2xl border border-green-900/30"><p id="labelComissaoBox" class="text-gray-500 text-[10px] font-bold uppercase mb-2">Sua Comissão</p><h2 id="totalComissaoBox" class="text-5xl font-bold text-green-500">R$ 0,00</h2></div>
+                        <div class="bg-[#111827] p-8 rounded-2xl border border-gray-800"><p class="text-gray-500 text-[10px] font-bold uppercase mb-2">Prêmio Total Líquido</p><h2 id="totalPremioBox" class="text-5xl font-bold text-white">R$ 0,00</h2></div>
                     </div>
                     <div class="bg-[#111827] rounded-xl border border-gray-800 overflow-hidden mt-8">
                         <table class="w-full text-left text-sm">
@@ -122,17 +105,47 @@
 
                 <!-- LEAD SUHAI -->
                 <div id="lead-suhai-page" class="section">
-                    <h2 class="text-2xl font-bold uppercase text-green-400 mb-8 tracking-tighter">Auditoria Suhai</h2>
+                    <h2 class="text-2xl font-bold uppercase text-green-400 mb-8 tracking-tighter">Relatório Lead Suhai (Concluídos)</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-center">
-                        <div class="bg-green-900/20 p-8 rounded-2xl border border-green-500/30 text-center"><p class="text-gray-400 text-[10px] font-bold uppercase mb-2">Soma Prêmio Suhai</p><h2 id="suhaiSomaPremio" class="text-4xl font-bold text-white">R$ 0,00</h2></div>
-                        <div class="bg-green-900/20 p-8 rounded-2xl border border-green-500/30 text-center"><p class="text-gray-400 text-[10px] font-bold uppercase mb-2">Soma Comissão Empresa</p><h2 id="suhaiSomaComis" class="text-4xl font-bold text-green-500">R$ 0,00</h2></div>
+                        <div class="bg-green-900/20 p-8 rounded-2xl border border-green-500/30 text-center"><p class="text-gray-400 text-[10px] font-bold uppercase mb-2">Prêmio Suhai Total</p><h2 id="suhaiSomaPremio" class="text-4xl font-bold text-white">R$ 0,00</h2></div>
+                        <div class="bg-green-900/20 p-8 rounded-2xl border border-green-500/30 text-center"><p class="text-gray-400 text-[10px] font-bold uppercase mb-2">Comissão Suhai Empresa</p><h2 id="suhaiSomaComis" class="text-4xl font-bold text-green-500">R$ 0,00</h2></div>
                     </div>
-                    <div class="bg-[#111827] rounded-xl border border-gray-800 overflow-hidden"><table class="w-full text-left text-sm"><thead class="bg-gray-800 text-gray-400 text-[10px] uppercase"><tr><th class="p-4">Cliente</th><th class="p-4">Vendedor</th><th class="p-4">Prêmio</th><th class="p-4">Comissão Empresa</th></tr></thead><tbody id="tableSuhaiConcluidos"></tbody></table></div>
+                    <div class="bg-[#111827] rounded-xl border border-gray-800 overflow-hidden">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-gray-800 text-gray-400 text-[10px] uppercase">
+                                <tr><th class="p-4">Cliente</th><th class="p-4">Vendedor</th><th class="p-4">Prêmio</th><th class="p-4">Comissão Empresa</th><th class="p-4">Data</th></tr>
+                            </thead>
+                            <tbody id="tableSuhaiConcluidos"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- PRODUÇÃO -->
+                <div id="kanban-vendas" class="section">
+                    <div class="flex justify-between items-center mb-8">
+                        <h2 class="text-2xl font-bold uppercase text-blue-500">Produção</h2>
+                        <div class="flex gap-2">
+                            <button onclick="EXCLUIR_MASSA('vendas')" class="bg-red-600/20 text-red-500 border border-red-600/50 px-4 py-2 rounded-xl font-bold text-[10px] uppercase hover:bg-red-600 hover:text-white transition">Deletar Selecionados</button>
+                            <button onclick="openModalProducaoNovo()" class="bg-blue-600 px-6 py-2 rounded-xl font-bold text-[11px] uppercase">+ Produção</button>
+                        </div>
+                    </div>
+                    <div class="kanban-wrapper scrollbar-thin">
+                        <div class="kanban-column"><h3 class="text-[11px] font-black mb-6 uppercase text-gray-400 text-center border-b border-gray-800 pb-4">Vistoria</h3><div id="col-vistoria" data-status="Fazer Vistoria" class="sortable-list space-y-4 min-h-[500px]"></div></div>
+                        <div class="kanban-column"><h3 class="text-[11px] font-black mb-6 uppercase text-gray-400 text-center border-b border-gray-800 pb-4">Boletos</h3><div id="col-boletos" data-status="Mandar Boletos" class="sortable-list space-y-4 min-h-[500px]"></div></div>
+                        <div class="kanban-column"><h3 class="text-[11px] font-black mb-6 uppercase text-gray-400 text-center border-b border-gray-800 pb-4">Pagamento</h3><div id="col-pagamento" data-status="Falta Pagamento" class="sortable-list space-y-4 min-h-[500px]"></div></div>
+                        <div class="kanban-column"><h3 class="text-[11px] font-black mb-6 uppercase text-green-500 text-center border-b border-green-900 pb-4">Concluído</h3><div id="col-concluido" data-status="Pagamento Efetuado" class="sortable-list space-y-4 min-h-[500px]"></div></div>
+                    </div>
                 </div>
 
                 <!-- INDICAÇÕES -->
                 <div id="kanban-indicacoes" class="section">
-                    <div class="flex justify-between items-center mb-8"><h2 class="text-2xl font-bold uppercase text-blue-500">Indicações</h2><div class="flex gap-2"><button onclick="EXCLUIR_SELECIONADOS_MASSA('indicacoes')" class="bg-red-600/20 text-red-500 border border-red-600/50 px-4 py-2 rounded-xl font-bold text-[10px] uppercase">Excluir Selecionados</button><button onclick="openModal('modalIndicacao')" class="bg-yellow-600 px-6 py-2 rounded-xl font-bold text-[11px] uppercase text-black">+ Manual</button></div></div>
+                    <div class="flex justify-between items-center mb-8">
+                        <h2 class="text-2xl font-bold uppercase text-blue-500">Indicações</h2>
+                        <div class="flex gap-2">
+                            <button onclick="EXCLUIR_MASSA('indicacoes')" class="bg-red-600/20 text-red-500 border border-red-600/50 px-4 py-2 rounded-xl font-bold text-[10px] uppercase">Deletar Selecionados</button>
+                            <button onclick="openModalIndicacaoNovo()" class="bg-yellow-600 px-6 py-2 rounded-xl font-bold text-[11px] uppercase text-black">+ Manual</button>
+                        </div>
+                    </div>
                     <div class="kanban-wrapper scrollbar-thin">
                         <div class="kanban-column"><h3 class="text-[11px] font-black mb-6 uppercase text-gray-400 text-center border-b border-gray-800 pb-4">Nova</h3><div id="ind-col-nova" data-status="NOVA INDICAÇÃO" class="sortable-list-ind space-y-4 min-h-[500px]"></div></div>
                         <div class="kanban-column"><h3 class="text-[11px] font-black mb-6 uppercase text-gray-400 text-center border-b border-gray-800 pb-4">WhatsApp</h3><div id="ind-col-whats" data-status="WHATSAPP" class="sortable-list-ind space-y-4 min-h-[500px]"></div></div>
@@ -143,28 +156,37 @@
 
                 <!-- CONFIGURAÇÕES -->
                 <div id="configuracoes" class="section">
-                    <h2 class="text-2xl font-bold uppercase text-gray-400 mb-8 tracking-tighter">Configurações</h2>
-                    <div class="bg-[#111827] p-8 rounded-3xl border border-gray-800 max-w-md"><p class="text-xs font-bold uppercase mb-4 text-blue-500">Sistema CRM v109</p><button onclick="LIMPAR_SISTEMA_PRODUCAO()" class="w-full bg-red-600/20 text-red-500 border border-red-600 p-4 rounded-xl font-bold text-[10px] uppercase hover:bg-red-600 hover:text-white transition">Apagar toda Produção (Limpeza)</button></div>
+                    <h2 class="text-2xl font-bold uppercase text-gray-400 mb-8 tracking-tighter">CRM Maintenance</h2>
+                    <div class="bg-[#111827] p-8 rounded-3xl border border-gray-800 max-w-md">
+                        <h4 class="text-red-500 font-bold uppercase text-xs mb-4">Zona de Risco</h4>
+                        <button onclick="LIMPAR_PRODUCAO_TOTAL()" class="w-full bg-red-600/20 text-red-500 border border-red-600 p-4 rounded-xl font-bold text-[10px] uppercase hover:bg-red-600 hover:text-white transition">Limpar Banco de Produção</button>
+                    </div>
                 </div>
 
-                <!-- VENDEDORES -->
+                <!-- LINKS ÚTEIS -->
+                <div id="links-uteis" class="section">
+                    <h2 class="text-2xl font-bold uppercase text-white mb-8 tracking-tighter">Links Úteis</h2>
+                    <div id="containerLinks" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+                </div>
+
+                <!-- ADMIN VENDEDORES -->
                 <div id="vendedores" class="section">
-                    <h2 class="text-2xl font-bold uppercase text-red-500 mb-8">Vendedores</h2>
+                    <h2 class="text-2xl font-bold uppercase text-red-500 mb-8">Equipe</h2>
                     <div id="gridVendedores" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
                 </div>
 
                 <!-- DISTRIBUIR LEADS -->
                 <div id="cadastrar-indicacao" class="section">
                     <div class="max-w-xl mx-auto bg-[#111827] p-8 rounded-3xl border border-gray-800 shadow-xl">
-                        <h2 class="text-xl font-bold uppercase text-yellow-500 mb-6 text-center">Distribuir Lead</h2>
+                        <h2 class="text-xl font-bold uppercase text-yellow-500 mb-6 text-center">Distribuir Lead Especial</h2>
                         <form id="formAdminIndicacao" class="space-y-4">
-                            <input type="text" id="adm_ind_cliente" placeholder="NOME DO CLIENTE" class="w-full p-4 border border-gray-800 rounded-xl uppercase">
-                            <input type="text" id="adm_ind_tel" placeholder="WHATSAPP" class="w-full p-4 border border-gray-800 rounded-xl">
-                            <input type="text" id="adm_ind_veiculo" placeholder="VEÍCULO" class="w-full p-4 border border-gray-800 rounded-xl uppercase">
-                            <select id="adm_ind_vendedor" class="w-full p-4 border border-gray-800 rounded-xl uppercase"></select>
+                            <input type="text" id="adm_ind_cliente" placeholder="NOME DO CLIENTE" class="w-full p-4 border border-gray-800 rounded-xl uppercase outline-none focus:border-yellow-600">
+                            <input type="text" id="adm_ind_tel" placeholder="WHATSAPP" class="w-full p-4 border border-gray-800 rounded-xl outline-none">
+                            <input type="text" id="adm_ind_veiculo" placeholder="VEÍCULO" class="w-full p-4 border border-gray-800 rounded-xl uppercase outline-none">
+                            <select id="adm_ind_vendedor" class="w-full p-4 border border-gray-800 rounded-xl uppercase outline-none"></select>
                             <div class="flex items-center gap-3 p-4 bg-gray-900 border border-gray-800 rounded-xl"><input type="checkbox" id="adm_ind_suhai" class="w-5 h-5 accent-green-500"><label for="adm_ind_suhai" class="text-[11px] font-bold uppercase text-green-400">Lead Especial Suhai</label></div>
-                            <textarea id="adm_ind_info" placeholder="OBSERVAÇÕES" class="w-full p-4 border border-gray-800 rounded-xl uppercase h-24 outline-none"></textarea>
-                            <button type="submit" class="w-full bg-yellow-600 p-4 rounded-xl font-black uppercase text-black">Enviar</button>
+                            <textarea id="adm_ind_info" placeholder="NOTAS" class="w-full p-4 border border-gray-800 rounded-xl uppercase h-24 outline-none"></textarea>
+                            <button type="submit" class="w-full bg-yellow-600 p-4 rounded-xl font-black uppercase text-black hover:bg-yellow-500 transition">Enviar ao Vendedor</button>
                         </form>
                     </div>
                 </div>
@@ -175,7 +197,7 @@
     <!-- MODAL PRODUÇÃO -->
     <div id="modalVenda" class="fixed inset-0 bg-black/95 hidden items-center justify-center z-[100] p-4">
         <div class="bg-[#111827] p-8 rounded-3xl w-full max-w-md border border-gray-800 shadow-2xl">
-            <h3 class="text-xl font-bold mb-6 uppercase text-blue-400" id="v_modal_title">Lançar Produção</h3>
+            <h3 class="text-xl font-bold mb-6 uppercase text-blue-400" id="modalVendaTitle">Produção</h3>
             <form id="formVenda" class="space-y-4">
                 <input type="hidden" id="v_id" value="">
                 <input type="text" id="v_cliente" placeholder="NOME" class="w-full p-4 border border-gray-800 rounded-xl uppercase" required>
@@ -191,8 +213,29 @@
                 <div class="flex items-center gap-3 p-4 bg-gray-900 border border-gray-800 rounded-xl"><input type="checkbox" id="v_suhai" class="w-5 h-5 accent-green-500"><label for="v_suhai" class="text-[11px] font-bold uppercase text-green-400">Identificar Lead Suhai</label></div>
                 <select id="v_status" class="w-full p-4 border border-gray-800 rounded-xl uppercase"><option>Fazer Vistoria</option><option>Mandar Boletos</option><option>Falta Pagamento</option><option>Pagamento Efetuado</option></select>
                 <div class="flex justify-between items-center pt-6">
-                    <button type="button" onclick="EXCLUIR_ITEM_DIRETO('vendas')" class="text-red-500 font-bold uppercase text-[10px] hover:underline">Deletar Permanente</button>
-                    <button type="submit" class="bg-blue-600 px-8 py-4 rounded-xl font-bold uppercase text-[11px]">Salvar</button>
+                    <button type="button" onclick="DELETAR_DEFINITIVO_MODAL('vendas')" class="text-red-500 font-bold uppercase text-[10px] hover:underline">Apagar Permanente</button>
+                    <button type="submit" class="bg-blue-600 px-8 py-4 rounded-xl font-bold uppercase text-[11px]">Salvar Dados</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL INDICAÇÃO -->
+    <div id="modalIndicacao" class="fixed inset-0 bg-black/95 hidden items-center justify-center z-[110] p-4">
+        <div class="bg-[#111827] p-8 rounded-3xl w-full max-w-md border border-gray-800">
+            <h3 class="text-xl font-bold mb-6 uppercase text-yellow-500" id="modalIndTitle">Indicação</h3>
+            <form id="formIndicacao" class="space-y-4">
+                <input type="hidden" id="ind_id" value="">
+                <input type="text" id="ind_cliente" placeholder="NOME" class="w-full p-4 border border-gray-800 rounded-xl uppercase" required>
+                <input type="text" id="ind_tel" placeholder="TELEFONE" class="w-full p-4 border border-gray-800 rounded-xl" required>
+                <input type="text" id="ind_veiculo" placeholder="VEÍCULO" class="w-full p-4 border border-gray-800 rounded-xl uppercase" required>
+                <select id="ind_vendedor" class="w-full p-4 border border-gray-800 rounded-xl uppercase"></select>
+                <div class="flex items-center gap-3 p-4 bg-gray-900 border border-gray-800 rounded-xl"><input type="checkbox" id="ind_suhai" class="w-5 h-5 accent-green-500"><label for="ind_suhai" class="text-[11px] font-bold uppercase text-green-400">Lead Especial Suhai</label></div>
+                <textarea id="ind_info" placeholder="NOTAS" class="w-full p-4 border border-gray-800 rounded-xl h-24 uppercase outline-none"></textarea>
+                <select id="ind_status" class="w-full p-4 border border-gray-800 rounded-xl uppercase"><option>NOVA INDICAÇÃO</option><option>WHATSAPP</option><option>COTAÇÃO REALIZADA</option><option>COBRAR ATENÇÃO</option></select>
+                <div class="flex justify-between items-center pt-6">
+                    <button type="button" onclick="DELETAR_DEFINITIVO_MODAL('indicacoes')" class="text-red-500 font-bold uppercase text-[10px] hover:underline">Apagar Permanente</button>
+                    <button type="submit" class="bg-yellow-600 px-8 py-4 rounded-xl font-bold uppercase text-[11px] text-black">Salvar Dados</button>
                 </div>
             </form>
         </div>
@@ -217,20 +260,18 @@
         window.cloud = {
             vendas: [], usuarios: [], indicacoes: [],
             async salvarVenda(d) { 
-                const id = d.id;
-                delete d.id; // Remove o ID do objeto para não salvar o ID dentro do documento
-                if(id && id.trim() !== "") { await updateDoc(doc(db, "vendas", id), d); } 
-                else { await addDoc(collection(db, "vendas"), { ...d, dataCriacao: Date.now() }); }
+                const id = d.id; delete d.id;
+                if(id && id.trim() !== "") await updateDoc(doc(db, "vendas", id), d); 
+                else await addDoc(collection(db, "vendas"), { ...d, dataCriacao: Date.now() }); 
             },
             async salvarIndicacao(d) { 
-                const id = d.id;
-                delete d.id;
-                if(id && id.trim() !== "") { await updateDoc(doc(db, "indicacoes", id), d); } 
-                else { await addDoc(collection(db, "indicacoes"), { ...d, dataCriacao: Date.now() }); }
+                const id = d.id; delete d.id;
+                if(id && id.trim() !== "") await updateDoc(doc(db, "indicacoes", id), d); 
+                else await addDoc(collection(db, "indicacoes"), { ...d, dataCriacao: Date.now() }); 
             },
-            async apagarDefinitivo(col, id) { await deleteDoc(doc(db, col, id)); },
-            async atualizarStatusVenda(id, s) { await updateDoc(doc(db, "vendas", id), { status: s }); },
-            async atualizarStatusIndicacao(id, s) { await updateDoc(doc(db, "indicacoes", id), { status: s }); }
+            async apagarNoBanco(col, id) { await deleteDoc(doc(db, col, id)); },
+            async updateStatusVenda(id, s) { await updateDoc(doc(db, "vendas", id), { status: s }); },
+            async updateStatusInd(id, s) { await updateDoc(doc(db, "indicacoes", id), { status: s }); }
         };
 
         onSnapshot(query(collection(db, "vendas"), orderBy("dataCriacao", "desc")), snap => { window.cloud.vendas = snap.docs.map(d => ({id: d.id, ...d.data()})); renderAll(); });
@@ -261,15 +302,15 @@
 
         function renderAll() {
             if(!window.cloud || !currentUser) return;
-            const myVendas = currentUser.isAdmin ? window.cloud.vendas : window.cloud.vendas.filter(v => v.vendedor === currentUser.nome);
-            const myInd = currentUser.isAdmin ? window.cloud.indicacoes : window.cloud.indicacoes.filter(i => i.vendedor === currentUser.nome);
-            const vConcluidas = myVendas.filter(v => v.status === 'Pagamento Efetuado');
+            const myV = currentUser.isAdmin ? window.cloud.vendas : window.cloud.vendas.filter(v => v.vendedor === currentUser.nome);
+            const myI = currentUser.isAdmin ? window.cloud.indicacoes : window.cloud.indicacoes.filter(i => i.vendedor === currentUser.nome);
+            const vConcluidas = myV.filter(v => v.status === 'Pagamento Efetuado');
 
-            document.getElementById('dashVendas').textContent = myVendas.length;
-            document.getElementById('dashComissao').textContent = formatBRL(myVendas.reduce((a,b) => a + parseFloat(currentUser.isAdmin ? (b.comissao_cheia || 0) : (b.comissao_vendedor || 0)), 0));
+            document.getElementById('dashVendas').textContent = myV.length;
+            document.getElementById('dashComissao').textContent = formatBRL(myV.reduce((a,b) => a + parseFloat(currentUser.isAdmin ? (b.comissao_cheia || 0) : (b.comissao_vendedor || 0)), 0));
 
-            renderKanbanVendas(myVendas);
-            renderKanbanIndicacoes(myInd);
+            renderKanbanVendas(myV);
+            renderKanbanIndicacoes(myI);
             renderFinanceiro(vConcluidas);
             renderSuhaiAuditoria(window.cloud.vendas.filter(v => v.status === 'Pagamento Efetuado' && v.suhai === true));
             renderVendedores();
@@ -281,46 +322,57 @@
             });
         }
 
-        // --- EXCLUSÃO ---
-        async function EXCLUIR_ITEM_DIRETO(colecao) {
-            const id = colecao === 'vendas' ? document.getElementById('v_id').value : document.getElementById('ind_id').value;
-            if(!id) return alert("ID não encontrado.");
-            if(confirm("Excluir permanentemente?")) {
-                await window.cloud.apagarDefinitivo(colecao, id);
+        // --- EXCLUSÃO BLINDADA ---
+        async function DELETAR_DEFINITIVO_MODAL(colecao) {
+            const id = (colecao === 'vendas') ? document.getElementById('v_id').value : document.getElementById('ind_id').value;
+            if(!id) return alert("Erro: Item não cadastrado no sistema.");
+            if(confirm("Deseja apagar este registro para SEMPRE?")) {
+                await window.cloud.apagarNoBanco(colecao, id);
                 closeModal(colecao === 'vendas' ? 'modalVenda' : 'modalIndicacao');
             }
         }
 
-        async function EXCLUIR_SELECIONADOS_MASSA(colecao) {
-            const sels = document.querySelectorAll(colecao === 'vendas' ? '.check-venda:checked' : '.check-ind:checked');
-            if(sels.length === 0) return alert("Selecione os clientes.");
-            if(confirm(`Apagar os ${sels.length} selecionados?`)) {
-                for(let c of sels) await window.cloud.apagarDefinitivo(colecao, c.value);
+        async function EXCLUIR_MASSA(colecao) {
+            const cl = colecao === 'vendas' ? '.check-venda' : '.check-ind';
+            const sels = document.querySelectorAll(`${cl}:checked`);
+            if(sels.length === 0) return alert("Marque as caixas de seleção primeiro.");
+            if(confirm(`DELETAR ${sels.length} registros para sempre?`)) {
+                for(let c of sels) await window.cloud.apagarNoBanco(colecao, c.value);
             }
         }
 
-        async function LIMPAR_SISTEMA_PRODUCAO() {
-            if(confirm("ALERTA: Isso apagará TODOS os clientes de Produção. Confirma?")) {
-                for(let v of window.cloud.vendas) await window.cloud.apagarDefinitivo('vendas', v.id);
-                alert("Limpo.");
+        async function LIMPAR_PRODUCAO_TOTAL() {
+            if(confirm("Confirma limpar TODO o banco de produção?")) {
+                for(let v of window.cloud.vendas) await window.cloud.apagarNoBanco('vendas', v.id);
             }
         }
 
         // --- RENDERS ---
         function renderKanbanVendas(vendas) {
-            const map = ['Fazer Vistoria', 'Mandar Boletos', 'Falta Pagamento', 'Pagamento Efetuado'];
             const cols = ['col-vistoria', 'col-boletos', 'col-pagamento', 'col-concluido'];
+            const map = ['Fazer Vistoria', 'Mandar Boletos', 'Falta Pagamento', 'Pagamento Efetuado'];
             cols.forEach((id, i) => {
                 document.getElementById(id).innerHTML = vendas.filter(v => v.status === map[i]).map(v => `
                     <div class="v-card" data-id="${v.id}">
                         <input type="checkbox" class="check-venda check-card" value="${v.id}">
                         <div onclick="preparaEdicaoVenda('${v.id}')">
-                            <div class="flex items-center gap-2 mb-2">${v.suhai ? '<i class="fas fa-star text-green-500 text-[10px]"></i>' : '<i class="fas fa-bell text-yellow-500 text-[10px]"></i>'}<h4 class="text-[11px] font-black uppercase text-white truncate pr-6">${v.cliente}</h4></div>
+                            <div class="flex items-center gap-2 mb-2">
+                                ${v.suhai ? '<i class="fas fa-star text-green-500 text-[10px]"></i>' : '<i class="fas fa-bell text-yellow-500 text-[10px]"></i>'}
+                                <h4 class="text-[11px] font-black uppercase text-white truncate pr-6">${v.cliente}</h4>
+                            </div>
                             <p class="text-[10px] text-blue-400 font-bold mb-3">${v.tel} | ${v.vendedor.split(' ')[0]}</p>
                             <div class="badge-valor w-full mb-2"><span class="text-[7px] uppercase font-bold text-gray-500">Prêmio Líquido</span><span class="text-[11px] font-bold text-white">${formatBRL(v.valor)}</span></div>
                             <div class="flex gap-2"><div class="badge-valor"><span class="text-[7px] uppercase font-bold text-blue-500">Cheia</span><span class="text-[10px] font-bold text-blue-400">${formatBRL(v.comissao_cheia)}</span></div><div class="badge-valor"><span class="text-[7px] uppercase font-bold text-green-500">Vendedor</span><span class="text-[10px] font-bold text-green-400">${formatBRL(v.comissao_vendedor)}</span></div></div>
                         </div>
                     </div>`).join('');
+            });
+        }
+
+        function renderKanbanIndicacoes(ind) {
+            const cols = ['ind-col-nova', 'ind-col-whats', 'ind-col-cotacao', 'ind-col-atencao'];
+            const map = ['NOVA INDICAÇÃO', 'WHATSAPP', 'COTAÇÃO REALIZADA', 'COBRAR ATENÇÃO'];
+            cols.forEach((id, i) => {
+                document.getElementById(id).innerHTML = ind.filter(x => x.status === map[i]).map(x => `<div class="v-card border-l-yellow-500" data-id="${x.id}"><input type="checkbox" class="check-ind check-card" value="${x.id}"><div onclick="preparaEdicaoIndicacao('${x.id}')"><div class="flex items-center gap-2 mb-1">${x.suhai ? '<i class="fas fa-star text-green-500 text-[10px]"></i>' : '<i class="fas fa-bell text-yellow-500 text-[10px]"></i>'}<h4 class="text-[11px] font-black uppercase text-white truncate pr-6">${x.cliente}</h4></div><p class="text-[10px] text-blue-400 font-bold mb-1">${x.tel}</p><p class="text-[9px] text-gray-400 uppercase mt-1">${x.veiculo} | ${x.vendedor.split(' ')[0]}</p></div></div>`).join('');
             });
         }
 
@@ -337,12 +389,26 @@
             document.getElementById('tableSuhaiConcluidos').innerHTML = s.map(x => `<tr class="border-b border-gray-800 text-[10px]"><td class="p-4 uppercase font-bold text-white">${x.cliente}</td><td class="p-4 uppercase text-gray-400">${x.vendedor}</td><td class="p-4 font-bold">${formatBRL(x.valor)}</td><td class="p-4 font-bold text-green-500">${currentUser.isAdmin ? formatBRL(x.comissao_cheia) : '***'}</td></tr>`).join('');
         }
 
-        // --- HELPERS EDICAO ---
+        // --- ABERTURA MODALS (IMPORTANTE) ---
+        window.openModalProducaoNovo = () => {
+            document.getElementById('v_id').value = ""; // Limpa ID para ser NOVO
+            document.getElementById('formVenda').reset();
+            document.getElementById('modalVendaTitle').textContent = "Nova Produção";
+            openModal('modalVenda');
+        };
+
+        window.openModalIndicacaoNovo = () => {
+            document.getElementById('ind_id').value = ""; // Limpa ID para ser NOVO
+            document.getElementById('formIndicacao').reset();
+            document.getElementById('modalIndTitle').textContent = "Nova Indicação";
+            openModal('modalIndicacao');
+        };
+
         window.preparaEdicaoVenda = (id) => {
             const v = window.cloud.vendas.find(x => x.id === id);
             if(!v) return;
-            document.getElementById('v_id').value = v.id;
-            document.getElementById('v_modal_title').textContent = "Editando Cliente";
+            document.getElementById('v_id').value = v.id; // Define ID para ser EDITAR
+            document.getElementById('modalVendaTitle').textContent = "Editando Cliente";
             document.getElementById('v_cliente').value = v.cliente;
             document.getElementById('v_tel').value = v.tel;
             document.getElementById('v_vendedor').value = v.vendedor;
@@ -354,6 +420,22 @@
             openModal('modalVenda');
         };
 
+        window.preparaEdicaoIndicacao = (id) => {
+            const i = window.cloud.indicacoes.find(x => x.id === id);
+            if(!i) return;
+            document.getElementById('ind_id').value = i.id;
+            document.getElementById('modalIndTitle').textContent = "Editando Indicação";
+            document.getElementById('ind_cliente').value = i.cliente;
+            document.getElementById('ind_tel').value = i.tel;
+            document.getElementById('ind_veiculo').value = i.veiculo;
+            document.getElementById('ind_vendedor').value = i.vendedor;
+            document.getElementById('ind_suhai').checked = i.suhai || false;
+            document.getElementById('ind_info').value = i.info || "";
+            document.getElementById('ind_status').value = i.status;
+            openModal('modalIndicacao');
+        };
+
+        // --- SUBMITS ---
         document.getElementById('formVenda').onsubmit = async (e) => {
             e.preventDefault();
             const id = document.getElementById('v_id').value;
@@ -371,21 +453,44 @@
             closeModal('modalVenda');
         };
 
-        // --- OUTROS RENDERS ---
-        function renderKanbanIndicacoes(ind) {
-            const cols = ['ind-col-nova', 'ind-col-whats', 'ind-col-cotacao', 'ind-col-atencao'];
-            const map = ['NOVA INDICAÇÃO', 'WHATSAPP', 'COTAÇÃO REALIZADA', 'COBRAR ATENÇÃO'];
-            cols.forEach((id, i) => {
-                document.getElementById(id).innerHTML = ind.filter(x => x.status === map[i]).map(x => `<div class="v-card border-l-yellow-500" data-id="${x.id}"><input type="checkbox" class="check-ind check-card" value="${x.id}"><div onclick="preparaEdicaoIndicacao('${x.id}')"><div class="flex items-center gap-2 mb-1"><h4 class="text-[11px] font-black uppercase text-white truncate pr-6">${x.cliente}</h4></div><p class="text-[10px] text-blue-400 font-bold mb-1">${x.tel}</p><p class="text-[9px] text-gray-400 uppercase mt-1">${x.veiculo}</p></div></div>`).join('');
+        document.getElementById('formIndicacao').onsubmit = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('ind_id').value;
+            await window.cloud.salvarIndicacao({
+                id: id,
+                cliente: document.getElementById('ind_cliente').value.toUpperCase(),
+                tel: document.getElementById('ind_tel').value,
+                veiculo: document.getElementById('ind_veiculo').value.toUpperCase(),
+                vendedor: document.getElementById('ind_vendedor').value,
+                suhai: document.getElementById('ind_suhai').checked,
+                info: document.getElementById('ind_info').value.toUpperCase(),
+                status: document.getElementById('ind_status').value
             });
-        }
+            closeModal('modalIndicacao');
+        };
+
+        document.getElementById('formAdminIndicacao').onsubmit = async (e) => {
+            e.preventDefault();
+            await window.cloud.salvarIndicacao({
+                cliente: document.getElementById('adm_ind_cliente').value.toUpperCase(),
+                tel: document.getElementById('adm_ind_tel').value,
+                veiculo: document.getElementById('adm_ind_veiculo').value.toUpperCase(),
+                vendedor: document.getElementById('adm_ind_vendedor').value,
+                suhai: document.getElementById('adm_ind_suhai').checked,
+                info: document.getElementById('adm_ind_info').value.toUpperCase(),
+                status: 'NOVA INDICAÇÃO'
+            });
+            alert('Lead Enviado!'); e.target.reset();
+        };
+
+        // --- UTILS ---
         function initSortable() {
-            document.querySelectorAll('.sortable-list').forEach(col => new Sortable(col, { group: 'prod', animation: 200, onEnd: async (e) => await window.cloud.atualizarStatusVenda(e.item.getAttribute('data-id'), e.to.getAttribute('data-status')) }));
-            document.querySelectorAll('.sortable-list-ind').forEach(col => new Sortable(col, { group: 'ind', animation: 200, onEnd: async (e) => await window.cloud.atualizarStatusIndicacao(e.item.getAttribute('data-id'), e.to.getAttribute('data-status')) }));
+            document.querySelectorAll('.sortable-list').forEach(col => new Sortable(col, { group: 'prod', animation: 200, onEnd: async (e) => await window.cloud.updateStatusVenda(e.item.getAttribute('data-id'), e.to.getAttribute('data-status')) }));
+            document.querySelectorAll('.sortable-list-ind').forEach(col => new Sortable(col, { group: 'ind', animation: 200, onEnd: async (e) => await window.cloud.updateStatusInd(e.item.getAttribute('data-id'), e.to.getAttribute('data-status')) }));
         }
         function showSection(id, btn) { document.querySelectorAll('.section').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); btn.classList.add('active'); }
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; document.querySelectorAll('input[type="hidden"]').forEach(i => i.value = ""); document.getElementById('v_modal_title').textContent = "Lançar Produção"; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; document.querySelectorAll('input[type="hidden"]').forEach(i => i.value = ""); }
         function renderVendedores() { if(!currentUser.isAdmin) return; document.getElementById('gridVendedores').innerHTML = window.cloud.usuarios.map(u => `<div class="v-card border-l-red-500"><h4 class="text-[11px] font-black uppercase text-white truncate">${u.nome}</h4></div>`).join(''); }
     </script>
 </body>
