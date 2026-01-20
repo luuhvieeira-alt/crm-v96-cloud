@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VM SEGUROS - CLOUD v110</title>
+    <title>VM SEGUROS - CLOUD</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
@@ -24,7 +24,9 @@
         .v-card:hover { border-color: #3b82f6; background: #242f41; transform: scale(1.02); }
         .badge-valor { background: rgba(15, 23, 42, 0.8); border: 1px solid #334155; padding: 4px 8px; border-radius: 6px; display: flex; flex-direction: column; flex: 1; text-align: center; }
         input, select, textarea { background: #0f172a !important; color: white !important; border: 1px solid #1e293b !important; outline: none; }
-        .check-card { position: absolute; top: 12px; right: 12px; width: 18px; height: 18px; accent-color: #ef4444; z-index: 50; }
+        .check-card { position: absolute; top: 12px; right: 12px; width: 18px; height: 18px; accent-color: #ef4444; z-index: 50; cursor: pointer; }
+        .progress-container { background: #1e293b; border-radius: 20px; height: 12px; width: 100%; overflow: hidden; border: 1px solid #334155; }
+        .progress-bar { background: linear-gradient(90deg, #3b82f6, #10b981); height: 100%; transition: width 0.5s ease-in-out; }
     </style>
 </head>
 <body class="bg-[#0b0f1a] text-gray-100 font-sans scrollbar-thin">
@@ -33,8 +35,8 @@
     <div id="loginScreen" class="min-h-screen flex items-center justify-center bg-black">
         <div class="bg-[#111827] p-10 rounded-3xl shadow-2xl w-full max-w-md border border-gray-800 text-center">
             <i class="fas fa-shield-alt text-7xl text-blue-500 mb-6"></i>
-            <h1 class="text-3xl font-bold mb-2 uppercase tracking-tighter text-white font-mono text-white">VM Seguros</h1>
-            <p class="text-gray-500 text-[10px] mb-8 uppercase font-bold tracking-[0.2em]">Cloud Security v110</p>
+            <h1 class="text-3xl font-bold mb-2 uppercase tracking-tighter text-white font-mono">VM Seguros</h1>
+            <p class="text-gray-500 text-[10px] mb-8 uppercase font-bold tracking-[0.2em]">Cloud Security</p>
             <div class="space-y-4">
                 <input type="text" id="username" placeholder="USUÁRIO" class="w-full p-4 rounded-xl border outline-none text-center transition uppercase">
                 <input type="password" id="password" placeholder="SENHA" class="w-full p-4 rounded-xl border outline-none text-center transition">
@@ -47,8 +49,7 @@
     <div id="crmSystem" class="hidden flex flex-col h-screen">
         <header class="bg-[#111827] border-b border-gray-800 p-4 flex justify-between items-center sticky top-0 z-50">
             <div class="flex items-center space-x-3">
-                <i class="fas fa-cloud text-blue-500 text-2xl"></i>
-                <span class="font-bold text-xl uppercase tracking-tighter font-mono">VM Seguros <span class="text-blue-500 text-xs">v110</span></span>
+                <span class="font-bold text-xl uppercase tracking-tighter font-mono">VM Seguros</span>
             </div>
             <div id="userDisplay" class="text-xs font-bold text-blue-400 bg-blue-900/20 px-4 py-2 rounded-full uppercase"></div>
         </header>
@@ -64,12 +65,13 @@
                     <div id="adminNavGroup" class="hidden pt-2 mt-2 border-t border-gray-800">
                         <button onclick="showSection('cadastrar-indicacao', this)" class="nav-item w-full text-left p-3 rounded-xl text-[11px] font-bold uppercase text-yellow-500"><i class="fas fa-plus-circle w-8"></i>Distribuir Leads</button>
                         <button onclick="showSection('vendedores', this)" class="nav-item w-full text-left p-3 rounded-xl text-[11px] font-bold uppercase text-red-400"><i class="fas fa-users w-8"></i>Vendedores</button>
+                        <button onclick="showSection('metas', this)" class="nav-item w-full text-left p-3 rounded-xl text-[11px] font-bold uppercase text-blue-400"><i class="fas fa-bullseye w-8"></i>Metas</button>
                         <button onclick="showSection('lead-suhai-page', this)" class="nav-item w-full text-left p-3 rounded-xl text-[11px] font-bold uppercase text-green-400"><i class="fas fa-star w-8"></i>Lead Suhai</button>
+                        <button id="navConfig" onclick="showSection('configuracoes', this)" class="nav-item w-full text-left p-3 rounded-xl text-[11px] font-bold uppercase text-gray-400"><i class="fas fa-cog w-8"></i>Configurações</button>
                     </div>
 
                     <div class="pt-2 mt-2 border-t border-gray-800">
                         <button onclick="showSection('links-uteis', this)" class="nav-item w-full text-left p-3 rounded-xl text-[11px] font-bold uppercase"><i class="fas fa-link w-8"></i>Links Úteis</button>
-                        <button onclick="showSection('configuracoes', this)" class="nav-item w-full text-left p-3 rounded-xl text-[11px] font-bold uppercase text-gray-400"><i class="fas fa-cog w-8"></i>Configurações</button>
                         <button onclick="location.reload()" class="nav-item w-full text-left p-3 rounded-xl text-[11px] font-bold uppercase text-red-500 mt-4"><i class="fas fa-sign-out-alt w-8"></i>Sair</button>
                     </div>
                 </nav>
@@ -77,58 +79,70 @@
 
             <main class="flex-1 p-6 overflow-y-auto bg-[#0b0f1a] scrollbar-thin">
                 
-                <!-- DASHBOARD -->
+                <!-- DASHBOARD (MÉTRICAS HOJE) -->
                 <div id="dashboard" class="section active">
-                    <h2 class="text-2xl font-bold uppercase mb-8 text-white tracking-tighter">Resumo Geral</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-[#111827] p-8 rounded-2xl border border-gray-800 text-center"><p class="text-gray-500 text-[10px] font-bold uppercase mb-2">Produções Ativas</p><h2 id="dashVendas" class="text-5xl font-bold text-white">0</h2></div>
-                        <div class="bg-[#111827] p-8 rounded-2xl border border-gray-800 text-center"><p id="labelDashFin" class="text-gray-500 text-[10px] font-bold uppercase mb-2">Comissão Prevista</p><h2 id="dashComissao" class="text-5xl font-bold text-green-500">R$ 0,00</h2></div>
+                    <h2 class="text-2xl font-bold uppercase mb-8 text-white tracking-tighter">Performance Hoje</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                        <div class="bg-[#111827] p-6 rounded-2xl border border-blue-900/30 text-center"><p class="text-gray-500 text-[10px] font-bold uppercase mb-2">Vendas Hoje</p><h2 id="dashVendasHoje" class="text-4xl font-bold text-white">0</h2></div>
+                        <div class="bg-[#111827] p-6 rounded-2xl border border-green-900/30 text-center"><p class="text-gray-500 text-[10px] font-bold uppercase mb-2">Comissão Hoje</p><h2 id="dashComissaoHoje" class="text-4xl font-bold text-green-500">R$ 0,00</h2></div>
+                        <div class="bg-[#111827] p-6 rounded-2xl border border-gray-800 text-center"><p class="text-gray-500 text-[10px] font-bold uppercase mb-2">Prêmio Líquido Hoje</p><h2 id="dashPremioHoje" class="text-4xl font-bold text-white">R$ 0,00</h2></div>
+                    </div>
+                    <h2 class="text-2xl font-bold uppercase mb-8 text-white tracking-tighter">Progresso das Metas</h2>
+                    <div id="containerMetasDashboard" class="grid grid-cols-1 md:grid-cols-3 gap-8"></div>
+                </div>
+
+                <!-- PÁGINA DISTRIBUIR LEADS -->
+                <div id="cadastrar-indicacao" class="section">
+                    <div class="max-w-xl mx-auto bg-[#111827] p-8 rounded-3xl border border-gray-800 shadow-xl">
+                        <h2 class="text-xl font-bold uppercase text-yellow-500 mb-6 text-center">Distribuir Novo Lead</h2>
+                        <form id="formAdminIndicacao" class="space-y-4">
+                            <input type="text" id="adm_ind_cliente" placeholder="NOME DO CLIENTE" class="w-full p-4 border border-gray-800 rounded-xl uppercase">
+                            <input type="text" id="adm_ind_tel" placeholder="WHATSAPP" class="w-full p-4 border border-gray-800 rounded-xl">
+                            <input type="text" id="adm_ind_veiculo" placeholder="VEÍCULO" class="w-full p-4 border border-gray-800 rounded-xl uppercase">
+                            <select id="adm_ind_vendedor" class="w-full p-4 border border-gray-800 rounded-xl uppercase"></select>
+                            <div class="flex items-center gap-3 p-4 bg-gray-900 border border-gray-800 rounded-xl"><input type="checkbox" id="adm_ind_suhai" class="w-5 h-5 accent-green-500"><label for="adm_ind_suhai" class="text-[11px] font-bold uppercase text-green-400">Lead Especial Suhai</label></div>
+                            <textarea id="adm_ind_info" placeholder="OBSERVAÇÕES" class="w-full p-4 border border-gray-800 rounded-xl uppercase h-24 outline-none"></textarea>
+                            <button type="submit" class="w-full bg-yellow-600 p-4 rounded-xl font-black uppercase text-black hover:bg-yellow-500 transition">Enviar para Kanban do Vendedor</button>
+                        </form>
                     </div>
                 </div>
 
-                <!-- FINANCEIRO -->
-                <div id="comissao" class="section">
-                    <h2 class="text-2xl font-bold uppercase text-green-500 mb-8 tracking-tighter">Financeiro Realizado</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-center">
-                        <div class="bg-[#111827] p-8 rounded-2xl border border-green-900/30"><p id="labelComissaoBox" class="text-gray-500 text-[10px] font-bold uppercase mb-2">Sua Comissão</p><h2 id="totalComissaoBox" class="text-5xl font-bold text-green-500">R$ 0,00</h2></div>
-                        <div class="bg-[#111827] p-8 rounded-2xl border border-gray-800"><p class="text-gray-500 text-[10px] font-bold uppercase mb-2">Prêmio Total Líquido</p><h2 id="totalPremioBox" class="text-5xl font-bold text-white">R$ 0,00</h2></div>
+                <!-- VENDEDORES (EDITÁVEL) -->
+                <div id="vendedores" class="section">
+                    <div class="flex justify-between items-center mb-8">
+                        <h2 class="text-2xl font-bold uppercase text-red-500 tracking-tighter">Equipe de Vendas</h2>
+                        <button onclick="openModalUsuarioNovo()" class="bg-red-600 px-6 py-2 rounded-xl font-bold text-[11px] uppercase">+ Novo Vendedor</button>
                     </div>
-                    <div class="bg-[#111827] rounded-xl border border-gray-800 overflow-hidden mt-8">
-                        <table class="w-full text-left text-sm">
-                            <thead class="bg-gray-800 text-gray-400 text-[10px] uppercase">
-                                <tr><th class="p-4">Cliente</th><th class="p-4">Prêmio Líquido</th><th class="p-4">Sua Comissão</th><th class="p-4">Data</th></tr>
-                            </thead>
-                            <tbody id="tableComissoesReal"></tbody>
-                        </table>
-                    </div>
+                    <div id="gridVendedores" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
                 </div>
 
-                <!-- LEAD SUHAI -->
+                <!-- LEAD SUHAI (AUDITORIA) -->
                 <div id="lead-suhai-page" class="section">
-                    <h2 class="text-2xl font-bold uppercase text-green-400 mb-8 tracking-tighter">Relatório Lead Suhai (Concluídos)</h2>
+                    <h2 class="text-2xl font-bold uppercase text-green-400 mb-8 tracking-tighter">Relatório Lead Suhai</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-center">
-                        <div class="bg-green-900/20 p-8 rounded-2xl border border-green-500/30 text-center"><p class="text-gray-400 text-[10px] font-bold uppercase mb-2">Prêmio Suhai Total</p><h2 id="suhaiSomaPremio" class="text-4xl font-bold text-white">R$ 0,00</h2></div>
-                        <div class="bg-green-900/20 p-8 rounded-2xl border border-green-500/30 text-center"><p class="text-gray-400 text-[10px] font-bold uppercase mb-2">Comissão Suhai Empresa</p><h2 id="suhaiSomaComis" class="text-4xl font-bold text-green-500">R$ 0,00</h2></div>
+                        <div class="bg-green-900/10 p-8 rounded-2xl border border-green-500/20 text-center"><p class="text-gray-400 text-[10px] font-bold uppercase mb-2">Total Prêmio Suhai</p><h2 id="suhaiSomaPremio" class="text-4xl font-bold text-white">R$ 0,00</h2></div>
+                        <div class="bg-green-900/10 p-8 rounded-2xl border border-green-500/20 text-center"><p class="text-gray-400 text-[10px] font-bold uppercase mb-2">Total Comissão Suhai (E)</p><h2 id="suhaiSomaComis" class="text-4xl font-bold text-green-500">R$ 0,00</h2></div>
                     </div>
-                    <div class="bg-[#111827] rounded-xl border border-gray-800 overflow-hidden">
-                        <table class="w-full text-left text-sm">
-                            <thead class="bg-gray-800 text-gray-400 text-[10px] uppercase">
-                                <tr><th class="p-4">Cliente</th><th class="p-4">Vendedor</th><th class="p-4">Prêmio</th><th class="p-4">Comissão Empresa</th><th class="p-4">Data</th></tr>
-                            </thead>
-                            <tbody id="tableSuhaiConcluidos"></tbody>
-                        </table>
+                    <div class="bg-[#111827] rounded-xl border border-gray-800 overflow-hidden"><table class="w-full text-left text-sm"><thead class="bg-gray-800 text-gray-400 text-[10px] uppercase"><tr><th class="p-4">Cliente</th><th class="p-4">Vendedor</th><th class="p-4">Prêmio</th><th class="p-4">Comissão Empresa</th></tr></thead><tbody id="tableSuhaiConcluidos"></tbody></table></div>
+                </div>
+
+                <!-- METAS -->
+                <div id="metas" class="section">
+                    <h2 class="text-2xl font-bold uppercase text-blue-400 mb-8 tracking-tighter">Gestão de Objetivos</h2>
+                    <div class="bg-[#111827] p-8 rounded-3xl border border-gray-800 max-w-4xl">
+                        <form id="formMetas" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                            <div><label class="text-[10px] font-bold text-gray-500 uppercase mb-2 block">Vendedor</label><select id="meta_vendedor" class="w-full p-3 rounded-xl border border-gray-800 uppercase"></select></div>
+                            <div><label class="text-[10px] font-bold text-gray-500 uppercase mb-2 block">Meta Salário (R$)</label><input type="number" id="meta_salario" class="w-full p-3 rounded-xl border border-gray-800"></div>
+                            <div><label class="text-[10px] font-bold text-gray-500 uppercase mb-2 block">Meta Prêmio (R$)</label><input type="number" id="meta_premio" class="w-full p-3 rounded-xl border border-gray-800"></div>
+                            <div><label class="text-[10px] font-bold text-gray-500 uppercase mb-2 block">Meta Vendas (Qtd)</label><input type="number" id="meta_qtd" class="w-full p-3 rounded-xl border border-gray-800"></div>
+                            <div class="md:col-span-4"><button type="submit" class="w-full bg-blue-600 p-4 rounded-xl font-bold uppercase text-xs hover:bg-blue-500 transition">Salvar Metas</button></div>
+                        </form>
                     </div>
                 </div>
 
                 <!-- PRODUÇÃO -->
                 <div id="kanban-vendas" class="section">
-                    <div class="flex justify-between items-center mb-8">
-                        <h2 class="text-2xl font-bold uppercase text-blue-500">Produção</h2>
-                        <div class="flex gap-2">
-                            <button onclick="EXCLUIR_MASSA('vendas')" class="bg-red-600/20 text-red-500 border border-red-600/50 px-4 py-2 rounded-xl font-bold text-[10px] uppercase hover:bg-red-600 hover:text-white transition">Deletar Selecionados</button>
-                            <button onclick="openModalProducaoNovo()" class="bg-blue-600 px-6 py-2 rounded-xl font-bold text-[11px] uppercase">+ Produção</button>
-                        </div>
-                    </div>
+                    <div class="flex justify-between items-center mb-8"><h2 class="text-2xl font-bold uppercase text-blue-500">Produção</h2><div class="flex gap-2"><button onclick="EXCLUIR_MASSA('vendas')" class="bg-red-600/20 text-red-500 border border-red-600/50 px-4 py-2 rounded-xl font-bold text-[10px] uppercase transition hover:bg-red-600 hover:text-white">Excluir Selecionados</button><button onclick="openModalProducaoNovo()" class="bg-blue-600 px-6 py-2 rounded-xl font-bold text-[11px] uppercase">+ Produção</button></div></div>
                     <div class="kanban-wrapper scrollbar-thin">
                         <div class="kanban-column"><h3 class="text-[11px] font-black mb-6 uppercase text-gray-400 text-center border-b border-gray-800 pb-4">Vistoria</h3><div id="col-vistoria" data-status="Fazer Vistoria" class="sortable-list space-y-4 min-h-[500px]"></div></div>
                         <div class="kanban-column"><h3 class="text-[11px] font-black mb-6 uppercase text-gray-400 text-center border-b border-gray-800 pb-4">Boletos</h3><div id="col-boletos" data-status="Mandar Boletos" class="sortable-list space-y-4 min-h-[500px]"></div></div>
@@ -139,13 +153,7 @@
 
                 <!-- INDICAÇÕES -->
                 <div id="kanban-indicacoes" class="section">
-                    <div class="flex justify-between items-center mb-8">
-                        <h2 class="text-2xl font-bold uppercase text-blue-500">Indicações</h2>
-                        <div class="flex gap-2">
-                            <button onclick="EXCLUIR_MASSA('indicacoes')" class="bg-red-600/20 text-red-500 border border-red-600/50 px-4 py-2 rounded-xl font-bold text-[10px] uppercase">Deletar Selecionados</button>
-                            <button onclick="openModalIndicacaoNovo()" class="bg-yellow-600 px-6 py-2 rounded-xl font-bold text-[11px] uppercase text-black">+ Manual</button>
-                        </div>
-                    </div>
+                    <div class="flex justify-between items-center mb-8"><h2 class="text-2xl font-bold uppercase text-blue-500">Indicações</h2><div class="flex gap-2"><button onclick="EXCLUIR_MASSA('indicacoes')" class="bg-red-600/20 text-red-500 border border-red-600/50 px-4 py-2 rounded-xl font-bold text-[10px] uppercase">Excluir Selecionados</button><button onclick="openModalIndicacaoNovo()" class="bg-yellow-600 px-6 py-2 rounded-xl font-bold text-[11px] uppercase text-black">+ Manual</button></div></div>
                     <div class="kanban-wrapper scrollbar-thin">
                         <div class="kanban-column"><h3 class="text-[11px] font-black mb-6 uppercase text-gray-400 text-center border-b border-gray-800 pb-4">Nova</h3><div id="ind-col-nova" data-status="NOVA INDICAÇÃO" class="sortable-list-ind space-y-4 min-h-[500px]"></div></div>
                         <div class="kanban-column"><h3 class="text-[11px] font-black mb-6 uppercase text-gray-400 text-center border-b border-gray-800 pb-4">WhatsApp</h3><div id="ind-col-whats" data-status="WHATSAPP" class="sortable-list-ind space-y-4 min-h-[500px]"></div></div>
@@ -154,47 +162,54 @@
                     </div>
                 </div>
 
-                <!-- CONFIGURAÇÕES -->
-                <div id="configuracoes" class="section">
-                    <h2 class="text-2xl font-bold uppercase text-gray-400 mb-8 tracking-tighter">CRM Maintenance</h2>
-                    <div class="bg-[#111827] p-8 rounded-3xl border border-gray-800 max-w-md">
-                        <h4 class="text-red-500 font-bold uppercase text-xs mb-4">Zona de Risco</h4>
-                        <button onclick="LIMPAR_PRODUCAO_TOTAL()" class="w-full bg-red-600/20 text-red-500 border border-red-600 p-4 rounded-xl font-bold text-[10px] uppercase hover:bg-red-600 hover:text-white transition">Limpar Banco de Produção</button>
+                <!-- FINANCEIRO -->
+                <div id="comissao" class="section">
+                    <h2 class="text-2xl font-bold uppercase text-green-500 mb-8 tracking-tighter">Financeiro Realizado</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-center">
+                        <div class="bg-[#111827] p-8 rounded-2xl border border-green-900/30"><p id="labelComissaoBox" class="text-gray-500 text-[10px] font-bold uppercase mb-2"></p><h2 id="totalComissaoBox" class="text-5xl font-bold text-green-500">R$ 0,00</h2></div>
+                        <div class="bg-[#111827] p-8 rounded-2xl border border-gray-800"><p class="text-gray-500 text-[10px] font-bold uppercase mb-2">Volume Líquido</p><h2 id="totalPremioBox" class="text-5xl font-bold text-white">R$ 0,00</h2></div>
                     </div>
+                    <div class="bg-[#111827] rounded-xl border border-gray-800 overflow-hidden mt-8"><table class="w-full text-left text-sm"><thead class="bg-gray-800 text-gray-400 text-[10px] uppercase"><tr><th class="p-4">Cliente</th><th class="p-4">Prêmio Líquido</th><th class="p-4">Sua Comissão</th><th class="p-4">Data</th></tr></thead><tbody id="tableComissoesReal"></tbody></table></div>
                 </div>
 
                 <!-- LINKS ÚTEIS -->
                 <div id="links-uteis" class="section">
-                    <h2 class="text-2xl font-bold uppercase text-white mb-8 tracking-tighter">Links Úteis</h2>
+                    <div class="flex justify-between items-center mb-8"><h2 class="text-2xl font-bold uppercase text-white tracking-tighter">Links Úteis</h2><button onclick="addNovoLink()" class="bg-blue-600 px-4 py-2 rounded-lg font-bold text-[10px] uppercase">+ Novo Link</button></div>
                     <div id="containerLinks" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
                 </div>
 
-                <!-- ADMIN VENDEDORES -->
-                <div id="vendedores" class="section">
-                    <h2 class="text-2xl font-bold uppercase text-red-500 mb-8">Equipe</h2>
-                    <div id="gridVendedores" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
-                </div>
-
-                <!-- DISTRIBUIR LEADS -->
-                <div id="cadastrar-indicacao" class="section">
-                    <div class="max-w-xl mx-auto bg-[#111827] p-8 rounded-3xl border border-gray-800 shadow-xl">
-                        <h2 class="text-xl font-bold uppercase text-yellow-500 mb-6 text-center">Distribuir Lead Especial</h2>
-                        <form id="formAdminIndicacao" class="space-y-4">
-                            <input type="text" id="adm_ind_cliente" placeholder="NOME DO CLIENTE" class="w-full p-4 border border-gray-800 rounded-xl uppercase outline-none focus:border-yellow-600">
-                            <input type="text" id="adm_ind_tel" placeholder="WHATSAPP" class="w-full p-4 border border-gray-800 rounded-xl outline-none">
-                            <input type="text" id="adm_ind_veiculo" placeholder="VEÍCULO" class="w-full p-4 border border-gray-800 rounded-xl uppercase outline-none">
-                            <select id="adm_ind_vendedor" class="w-full p-4 border border-gray-800 rounded-xl uppercase outline-none"></select>
-                            <div class="flex items-center gap-3 p-4 bg-gray-900 border border-gray-800 rounded-xl"><input type="checkbox" id="adm_ind_suhai" class="w-5 h-5 accent-green-500"><label for="adm_ind_suhai" class="text-[11px] font-bold uppercase text-green-400">Lead Especial Suhai</label></div>
-                            <textarea id="adm_ind_info" placeholder="NOTAS" class="w-full p-4 border border-gray-800 rounded-xl uppercase h-24 outline-none"></textarea>
-                            <button type="submit" class="w-full bg-yellow-600 p-4 rounded-xl font-black uppercase text-black hover:bg-yellow-500 transition">Enviar ao Vendedor</button>
-                        </form>
+                <!-- CONFIGURAÇÕES -->
+                <div id="configuracoes" class="section">
+                    <h2 class="text-2xl font-bold uppercase text-gray-400 mb-8 tracking-tighter">Configurações</h2>
+                    <div class="bg-[#111827] p-8 rounded-3xl border border-gray-800 max-w-md">
+                        <h4 class="text-red-500 font-bold uppercase text-xs mb-4">Limpeza do Sistema</h4>
+                        <button onclick="LIMPAR_PRODUCAO_TOTAL()" class="w-full bg-red-600/20 text-red-500 border border-red-600 p-4 rounded-xl font-bold text-[10px] uppercase hover:bg-red-600 hover:text-white transition">Limpar Banco de Produção</button>
                     </div>
                 </div>
             </main>
         </div>
     </div>
 
-    <!-- MODAL PRODUÇÃO -->
+    <!-- MODAL VENDEDOR -->
+    <div id="modalUsuario" class="fixed inset-0 bg-black/95 hidden items-center justify-center z-[200] p-4">
+        <div class="bg-[#111827] p-8 rounded-3xl w-full max-w-md border border-gray-800">
+            <h3 class="text-xl font-bold mb-6 uppercase text-red-500 text-center" id="modalUserTitle">Vendedor</h3>
+            <form id="formUsuario" class="space-y-4">
+                <input type="hidden" id="u_id">
+                <input type="text" id="u_nome" placeholder="NOME COMPLETO" class="w-full p-4 border border-gray-800 rounded-xl" required>
+                <input type="text" id="u_login" placeholder="LOGIN" class="w-full p-4 border border-gray-800 rounded-xl" required>
+                <input type="password" id="u_senha" placeholder="SENHA" class="w-full p-4 border border-gray-800 rounded-xl" required>
+                <select id="u_setor" class="w-full p-4 border border-gray-800 rounded-xl"><option>VENDEDOR</option><option>ADMIN</option></select>
+                <input type="number" id="u_comissao" placeholder="% COMISSÃO" class="w-full p-4 border border-gray-800 rounded-xl" required>
+                <div class="flex justify-between items-center pt-6">
+                    <button type="button" onclick="EXCLUIR_ITEM_DIRETO('usuarios')" id="btnDelUser" class="text-red-500 font-bold uppercase text-[10px] hidden">Excluir</button>
+                    <button type="submit" class="bg-red-600 px-8 py-4 rounded-xl font-bold uppercase text-[11px] ml-auto">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAIS PRODUÇÃO E INDICAÇÃO -->
     <div id="modalVenda" class="fixed inset-0 bg-black/95 hidden items-center justify-center z-[100] p-4">
         <div class="bg-[#111827] p-8 rounded-3xl w-full max-w-md border border-gray-800 shadow-2xl">
             <h3 class="text-xl font-bold mb-6 uppercase text-blue-400" id="modalVendaTitle">Produção</h3>
@@ -212,17 +227,13 @@
                 </div>
                 <div class="flex items-center gap-3 p-4 bg-gray-900 border border-gray-800 rounded-xl"><input type="checkbox" id="v_suhai" class="w-5 h-5 accent-green-500"><label for="v_suhai" class="text-[11px] font-bold uppercase text-green-400">Identificar Lead Suhai</label></div>
                 <select id="v_status" class="w-full p-4 border border-gray-800 rounded-xl uppercase"><option>Fazer Vistoria</option><option>Mandar Boletos</option><option>Falta Pagamento</option><option>Pagamento Efetuado</option></select>
-                <div class="flex justify-between items-center pt-6">
-                    <button type="button" onclick="DELETAR_DEFINITIVO_MODAL('vendas')" class="text-red-500 font-bold uppercase text-[10px] hover:underline">Apagar Permanente</button>
-                    <button type="submit" class="bg-blue-600 px-8 py-4 rounded-xl font-bold uppercase text-[11px]">Salvar Dados</button>
-                </div>
+                <div class="flex justify-between items-center pt-6"><button type="button" onclick="EXCLUIR_ITEM_DIRETO('vendas')" class="text-red-500 font-bold uppercase text-[10px] hover:underline">Apagar Permanente</button><button type="submit" class="bg-blue-600 px-8 py-4 rounded-xl font-bold uppercase text-[11px]">Salvar</button></div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL INDICAÇÃO -->
     <div id="modalIndicacao" class="fixed inset-0 bg-black/95 hidden items-center justify-center z-[110] p-4">
-        <div class="bg-[#111827] p-8 rounded-3xl w-full max-w-md border border-gray-800">
+        <div class="bg-[#111827] p-8 rounded-3xl w-full max-w-md border border-gray-800 shadow-2xl">
             <h3 class="text-xl font-bold mb-6 uppercase text-yellow-500" id="modalIndTitle">Indicação</h3>
             <form id="formIndicacao" class="space-y-4">
                 <input type="hidden" id="ind_id" value="">
@@ -233,18 +244,15 @@
                 <div class="flex items-center gap-3 p-4 bg-gray-900 border border-gray-800 rounded-xl"><input type="checkbox" id="ind_suhai" class="w-5 h-5 accent-green-500"><label for="ind_suhai" class="text-[11px] font-bold uppercase text-green-400">Lead Especial Suhai</label></div>
                 <textarea id="ind_info" placeholder="NOTAS" class="w-full p-4 border border-gray-800 rounded-xl h-24 uppercase outline-none"></textarea>
                 <select id="ind_status" class="w-full p-4 border border-gray-800 rounded-xl uppercase"><option>NOVA INDICAÇÃO</option><option>WHATSAPP</option><option>COTAÇÃO REALIZADA</option><option>COBRAR ATENÇÃO</option></select>
-                <div class="flex justify-between items-center pt-6">
-                    <button type="button" onclick="DELETAR_DEFINITIVO_MODAL('indicacoes')" class="text-red-500 font-bold uppercase text-[10px] hover:underline">Apagar Permanente</button>
-                    <button type="submit" class="bg-yellow-600 px-8 py-4 rounded-xl font-bold uppercase text-[11px] text-black">Salvar Dados</button>
-                </div>
+                <div class="flex justify-between items-center pt-6"><button type="button" onclick="EXCLUIR_ITEM_DIRETO('indicacoes')" class="text-red-500 font-bold uppercase text-[10px] hover:underline">Apagar Permanente</button><button type="submit" class="bg-yellow-600 px-8 py-4 rounded-xl font-bold uppercase text-[11px] text-black">Salvar</button></div>
             </form>
         </div>
     </div>
 
-    <!-- FIREBASE CORE -->
+    <!-- FIREBASE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDvlpoHOKyRXmNG3RVYiTspOQ3TxsHH03s",
@@ -258,25 +266,19 @@
         const db = getFirestore(app);
 
         window.cloud = {
-            vendas: [], usuarios: [], indicacoes: [],
-            async salvarVenda(d) { 
-                const id = d.id; delete d.id;
-                if(id && id.trim() !== "") await updateDoc(doc(db, "vendas", id), d); 
-                else await addDoc(collection(db, "vendas"), { ...d, dataCriacao: Date.now() }); 
-            },
-            async salvarIndicacao(d) { 
-                const id = d.id; delete d.id;
-                if(id && id.trim() !== "") await updateDoc(doc(db, "indicacoes", id), d); 
-                else await addDoc(collection(db, "indicacoes"), { ...d, dataCriacao: Date.now() }); 
-            },
-            async apagarNoBanco(col, id) { await deleteDoc(doc(db, col, id)); },
-            async updateStatusVenda(id, s) { await updateDoc(doc(db, "vendas", id), { status: s }); },
-            async updateStatusInd(id, s) { await updateDoc(doc(db, "indicacoes", id), { status: s }); }
+            vendas: [], usuarios: [], indicacoes: [], metas: [],
+            async salvarVenda(d) { const id = d.id; delete d.id; if(id) await updateDoc(doc(db,"vendas",id),d); else await addDoc(collection(db,"vendas"),{...d,dataCriacao:Date.now()}); },
+            async salvarIndicacao(d) { const id = d.id; delete d.id; if(id) await updateDoc(doc(db,"indicacoes",id),d); else await addDoc(collection(db,"indicacoes"),{...d,dataCriacao:Date.now()}); },
+            async salvarUsuario(d) { const id = d.id; delete d.id; if(id) await updateDoc(doc(db,"usuarios",id),d); else await addDoc(collection(db,"usuarios"),d); },
+            async salvarMeta(d) { await setDoc(doc(db, "metas", d.vendedor), d); },
+            async apagar(col,id) { await deleteDoc(doc(db,col,id)); },
+            async updateStatus(col,id,s) { await updateDoc(doc(db,col,id),{status:s}); }
         };
 
-        onSnapshot(query(collection(db, "vendas"), orderBy("dataCriacao", "desc")), snap => { window.cloud.vendas = snap.docs.map(d => ({id: d.id, ...d.data()})); renderAll(); });
-        onSnapshot(collection(db, "usuarios"), snap => { window.cloud.usuarios = snap.docs.map(d => ({id: d.id, ...d.data()})); renderAll(); });
-        onSnapshot(query(collection(db, "indicacoes"), orderBy("dataCriacao", "desc")), snap => { window.cloud.indicacoes = snap.docs.map(d => ({id: d.id, ...d.data()})); renderAll(); });
+        onSnapshot(query(collection(db,"vendas"),orderBy("dataCriacao","desc")),snap=>{ window.cloud.vendas=snap.docs.map(d=>({id:d.id,...d.data()})); renderAll(); });
+        onSnapshot(collection(db,"usuarios"),snap=>{ window.cloud.usuarios=snap.docs.map(d=>({id:d.id,...d.data()})); renderAll(); });
+        onSnapshot(collection(db,"metas"),snap=>{ window.cloud.metas=snap.docs.map(d=>({id:d.id,...d.data()})); renderAll(); });
+        onSnapshot(query(collection(db,"indicacoes"),orderBy("dataCriacao","desc")),snap=>{ window.cloud.indicacoes=snap.docs.map(d=>({id:d.id,...d.data()})); renderAll(); });
     </script>
 
     <script>
@@ -286,101 +288,87 @@
         function handleLogin() {
             const uI = document.getElementById('username').value.trim().toLowerCase();
             const pI = document.getElementById('password').value.trim();
-            if(uI === 'admin' && pI === 'admin123') currentUser = { nome: 'ADMIN MASTER', login: 'admin', setor: 'ADMIN', isAdmin: true };
+            if(uI === 'admin' && pI === 'admin123') currentUser = { nome: 'ADMIN MASTER', setor: 'ADMIN', isAdmin: true };
             else {
                 const found = window.cloud.usuarios.find(u => u.login === uI && u.senha === pI);
-                if(found) currentUser = { ...found, isAdmin: (found.setor === 'ADMIN' || found.setor === 'DIRETORIA') };
+                if(found) currentUser = { ...found, isAdmin: (found.setor === 'ADMIN') };
             }
             if(currentUser) {
                 document.getElementById('loginScreen').classList.add('hidden');
                 document.getElementById('crmSystem').classList.remove('hidden');
-                document.getElementById('userDisplay').textContent = currentUser.nome;
+                document.getElementById('userDisplay').textContent = currentUser.isAdmin ? currentUser.nome : `SEJA BEM VINDO, ${currentUser.nome}`;
                 if(currentUser.isAdmin) document.getElementById('adminNavGroup').classList.remove('hidden');
+                else document.getElementById('navConfig').classList.add('hidden');
                 initSortable(); renderAll();
-            } else alert('Acesso Negado');
+            } else alert('Negado');
         }
 
         function renderAll() {
             if(!window.cloud || !currentUser) return;
+            const today = new Date().setHours(0,0,0,0);
             const myV = currentUser.isAdmin ? window.cloud.vendas : window.cloud.vendas.filter(v => v.vendedor === currentUser.nome);
-            const myI = currentUser.isAdmin ? window.cloud.indicacoes : window.cloud.indicacoes.filter(i => i.vendedor === currentUser.nome);
-            const vConcluidas = myV.filter(v => v.status === 'Pagamento Efetuado');
+            
+            const vHoje = myV.filter(v => v.dataCriacao >= today);
+            document.getElementById('dashVendasHoje').textContent = vHoje.length;
+            document.getElementById('dashComissaoHoje').textContent = formatBRL(vHoje.reduce((a,b) => a + parseFloat(currentUser.isAdmin ? (b.comissao_cheia || 0) : (b.comissao_vendedor || 0)), 0));
+            document.getElementById('dashPremioHoje').textContent = formatBRL(vHoje.reduce((a,b) => a + parseFloat(b.valor || 0), 0));
 
-            document.getElementById('dashVendas').textContent = myV.length;
-            document.getElementById('dashComissao').textContent = formatBRL(myV.reduce((a,b) => a + parseFloat(currentUser.isAdmin ? (b.comissao_cheia || 0) : (b.comissao_vendedor || 0)), 0));
-
+            renderMetasDash();
             renderKanbanVendas(myV);
-            renderKanbanIndicacoes(myI);
-            renderFinanceiro(vConcluidas);
+            renderKanbanIndicacoes(currentUser.isAdmin ? window.cloud.indicacoes : window.cloud.indicacoes.filter(i => i.vendedor === currentUser.nome));
+            renderFinanceiro(myV.filter(v => v.status === 'Pagamento Efetuado'));
             renderSuhaiAuditoria(window.cloud.vendas.filter(v => v.status === 'Pagamento Efetuado' && v.suhai === true));
             renderVendedores();
             
             const vHtml = window.cloud.usuarios.map(u => `<option value="${u.nome}">${u.nome}</option>`).join('');
-            ['v_vendedor', 'adm_ind_vendedor', 'ind_vendedor'].forEach(id => {
+            ['v_vendedor','adm_ind_vendedor','meta_vendedor','ind_vendedor'].forEach(id => {
                 const el = document.getElementById(id);
-                if(el) { el.innerHTML = vHtml; if(currentUser.isAdmin) el.disabled = false; else { el.value = currentUser.nome; el.disabled = true; } }
+                if(el) { el.innerHTML = vHtml; if(currentUser.isAdmin) el.disabled=false; else { el.value=currentUser.nome; el.disabled=true; } }
             });
         }
 
-        // --- EXCLUSÃO BLINDADA ---
-        async function DELETAR_DEFINITIVO_MODAL(colecao) {
-            const id = (colecao === 'vendas') ? document.getElementById('v_id').value : document.getElementById('ind_id').value;
-            if(!id) return alert("Erro: Item não cadastrado no sistema.");
-            if(confirm("Deseja apagar este registro para SEMPRE?")) {
-                await window.cloud.apagarNoBanco(colecao, id);
-                closeModal(colecao === 'vendas' ? 'modalVenda' : 'modalIndicacao');
-            }
-        }
-
-        async function EXCLUIR_MASSA(colecao) {
-            const cl = colecao === 'vendas' ? '.check-venda' : '.check-ind';
-            const sels = document.querySelectorAll(`${cl}:checked`);
-            if(sels.length === 0) return alert("Marque as caixas de seleção primeiro.");
-            if(confirm(`DELETAR ${sels.length} registros para sempre?`)) {
-                for(let c of sels) await window.cloud.apagarNoBanco(colecao, c.value);
-            }
-        }
-
-        async function LIMPAR_PRODUCAO_TOTAL() {
-            if(confirm("Confirma limpar TODO o banco de produção?")) {
-                for(let v of window.cloud.vendas) await window.cloud.apagarNoBanco('vendas', v.id);
-            }
-        }
-
-        // --- RENDERS ---
-        function renderKanbanVendas(vendas) {
-            const cols = ['col-vistoria', 'col-boletos', 'col-pagamento', 'col-concluido'];
-            const map = ['Fazer Vistoria', 'Mandar Boletos', 'Falta Pagamento', 'Pagamento Efetuado'];
-            cols.forEach((id, i) => {
-                document.getElementById(id).innerHTML = vendas.filter(v => v.status === map[i]).map(v => `
-                    <div class="v-card" data-id="${v.id}">
-                        <input type="checkbox" class="check-venda check-card" value="${v.id}">
-                        <div onclick="preparaEdicaoVenda('${v.id}')">
-                            <div class="flex items-center gap-2 mb-2">
-                                ${v.suhai ? '<i class="fas fa-star text-green-500 text-[10px]"></i>' : '<i class="fas fa-bell text-yellow-500 text-[10px]"></i>'}
-                                <h4 class="text-[11px] font-black uppercase text-white truncate pr-6">${v.cliente}</h4>
-                            </div>
-                            <p class="text-[10px] text-blue-400 font-bold mb-3">${v.tel} | ${v.vendedor.split(' ')[0]}</p>
-                            <div class="badge-valor w-full mb-2"><span class="text-[7px] uppercase font-bold text-gray-500">Prêmio Líquido</span><span class="text-[11px] font-bold text-white">${formatBRL(v.valor)}</span></div>
-                            <div class="flex gap-2"><div class="badge-valor"><span class="text-[7px] uppercase font-bold text-blue-500">Cheia</span><span class="text-[10px] font-bold text-blue-400">${formatBRL(v.comissao_cheia)}</span></div><div class="badge-valor"><span class="text-[7px] uppercase font-bold text-green-500">Vendedor</span><span class="text-[10px] font-bold text-green-400">${formatBRL(v.comissao_vendedor)}</span></div></div>
-                        </div>
-                    </div>`).join('');
+        function renderMetasDash() {
+            const container = document.getElementById('containerMetasDashboard');
+            container.innerHTML = "";
+            const targets = currentUser.isAdmin ? window.cloud.usuarios : [currentUser];
+            targets.forEach(u => {
+                const meta = window.cloud.metas.find(m => m.vendedor === u.nome) || { meta_salario: 0, meta_premio: 0 };
+                const userVendas = window.cloud.vendas.filter(v => v.vendedor === u.nome && v.status === 'Pagamento Efetuado');
+                const realC = userVendas.reduce((a,b) => a + parseFloat(b.comissao_vendedor || 0), 0);
+                const realP = userVendas.reduce((a,b) => a + parseFloat(b.valor || 0), 0);
+                const pC = Math.min((realC / (meta.meta_salario || 1)) * 100, 100);
+                const pP = Math.min((realP / (meta.meta_premio || 1)) * 100, 100);
+                container.innerHTML += `<div class="bg-[#111827] p-6 rounded-3xl border border-gray-800"><h4 class="text-xs font-bold uppercase text-blue-400 mb-4">${u.nome}</h4><div class="space-y-4"><div><p class="text-[9px] text-gray-500 uppercase mb-1">Salário: ${formatBRL(realC)} / ${formatBRL(meta.meta_salario)}</p><div class="progress-container"><div class="progress-bar" style="width:${pC}%"></div></div></div><div><p class="text-[9px] text-gray-500 uppercase mb-1">Prêmio: ${formatBRL(realP)} / ${formatBRL(meta.meta_premio)}</p><div class="progress-container"><div class="progress-bar" style="width:${pP}%"></div></div></div></div></div>`;
             });
         }
 
-        function renderKanbanIndicacoes(ind) {
-            const cols = ['ind-col-nova', 'ind-col-whats', 'ind-col-cotacao', 'ind-col-atencao'];
-            const map = ['NOVA INDICAÇÃO', 'WHATSAPP', 'COTAÇÃO REALIZADA', 'COBRAR ATENÇÃO'];
-            cols.forEach((id, i) => {
-                document.getElementById(id).innerHTML = ind.filter(x => x.status === map[i]).map(x => `<div class="v-card border-l-yellow-500" data-id="${x.id}"><input type="checkbox" class="check-ind check-card" value="${x.id}"><div onclick="preparaEdicaoIndicacao('${x.id}')"><div class="flex items-center gap-2 mb-1">${x.suhai ? '<i class="fas fa-star text-green-500 text-[10px]"></i>' : '<i class="fas fa-bell text-yellow-500 text-[10px]"></i>'}<h4 class="text-[11px] font-black uppercase text-white truncate pr-6">${x.cliente}</h4></div><p class="text-[10px] text-blue-400 font-bold mb-1">${x.tel}</p><p class="text-[9px] text-gray-400 uppercase mt-1">${x.veiculo} | ${x.vendedor.split(' ')[0]}</p></div></div>`).join('');
-            });
+        document.getElementById('formMetas').onsubmit = async (e) => { e.preventDefault(); await window.cloud.salvarMeta({ vendedor: document.getElementById('meta_vendedor').value, meta_salario: document.getElementById('meta_salario').value, meta_premio: document.getElementById('meta_premio').value, meta_qtd: document.getElementById('meta_qtd').value }); alert("OK!"); };
+
+        function renderVendedores() {
+            if(!currentUser.isAdmin) return;
+            document.getElementById('gridVendedores').innerHTML = window.cloud.usuarios.map(u => `<div class="v-card border-l-red-500" onclick="preparaEdicaoUsuario('${u.id}')"><h4 class="text-[11px] font-black uppercase text-white truncate">${u.nome}</h4><p class="text-[9px] text-gray-400 mt-2">LOGIN: ${u.login}</p><p class="text-[9px] text-gray-500 uppercase">FUNÇÃO: ${u.setor}</p></div>`).join('');
         }
+
+        window.openModalUsuarioNovo = () => { document.getElementById('u_id').value = ""; document.getElementById('formUsuario').reset(); document.getElementById('btnDelUser').classList.add('hidden'); openModal('modalUsuario'); };
+        window.preparaEdicaoUsuario = (id) => {
+            const u = window.cloud.usuarios.find(x => x.id === id);
+            document.getElementById('u_id').value = u.id;
+            document.getElementById('u_nome').value = u.nome;
+            document.getElementById('u_login').value = u.login;
+            document.getElementById('u_senha').value = u.senha;
+            document.getElementById('u_setor').value = u.setor;
+            document.getElementById('u_comissao').value = u.comissao;
+            document.getElementById('btnDelUser').classList.remove('hidden');
+            openModal('modalUsuario');
+        };
+
+        document.getElementById('formUsuario').onsubmit = async (e) => { e.preventDefault(); await window.cloud.salvarUsuario({ id: document.getElementById('u_id').value, nome: document.getElementById('u_nome').value.toUpperCase(), login: document.getElementById('u_login').value.toLowerCase(), senha: document.getElementById('u_senha').value, setor: document.getElementById('u_setor').value, comissao: document.getElementById('u_comissao').value }); closeModal('modalUsuario'); };
 
         function renderFinanceiro(v) {
             document.getElementById('totalComissaoBox').textContent = formatBRL(v.reduce((a,b) => a + parseFloat(currentUser.isAdmin ? (b.comissao_cheia || 0) : (b.comissao_vendedor || 0)), 0));
             document.getElementById('totalPremioBox').textContent = formatBRL(v.reduce((a,b) => a + parseFloat(b.valor || 0), 0));
             document.getElementById('labelComissaoBox').textContent = currentUser.isAdmin ? "Comissão Empresa" : "Sua Comissão";
-            document.getElementById('tableComissoesReal').innerHTML = v.map(x => `<tr class="border-b border-gray-800 text-[11px] hover:bg-gray-800/30"><td class="p-4 font-bold uppercase text-white">${x.cliente}</td><td class="p-4">${formatBRL(x.valor)}</td><td class="p-4 font-bold text-green-500">${formatBRL(currentUser.isAdmin ? x.comissao_cheia : x.comissao_vendedor)}</td><td class="p-4 text-gray-500">${new Date(x.dataCriacao).toLocaleDateString()}</td></tr>`).join('');
+            document.getElementById('tableComissoesReal').innerHTML = v.map(x => `<tr class="border-b border-gray-800 text-[11px]"><td class="p-4 uppercase font-bold text-white">${x.cliente}</td><td class="p-4">${formatBRL(x.valor)}</td><td class="p-4 font-bold text-green-500">${formatBRL(currentUser.isAdmin ? x.comissao_cheia : x.comissao_vendedor)}</td><td class="p-4 text-gray-500">${new Date(x.dataCriacao).toLocaleDateString()}</td></tr>`).join('');
         }
 
         function renderSuhaiAuditoria(s) {
@@ -389,26 +377,41 @@
             document.getElementById('tableSuhaiConcluidos').innerHTML = s.map(x => `<tr class="border-b border-gray-800 text-[10px]"><td class="p-4 uppercase font-bold text-white">${x.cliente}</td><td class="p-4 uppercase text-gray-400">${x.vendedor}</td><td class="p-4 font-bold">${formatBRL(x.valor)}</td><td class="p-4 font-bold text-green-500">${currentUser.isAdmin ? formatBRL(x.comissao_cheia) : '***'}</td></tr>`).join('');
         }
 
-        // --- ABERTURA MODALS (IMPORTANTE) ---
-        window.openModalProducaoNovo = () => {
-            document.getElementById('v_id').value = ""; // Limpa ID para ser NOVO
-            document.getElementById('formVenda').reset();
-            document.getElementById('modalVendaTitle').textContent = "Nova Produção";
-            openModal('modalVenda');
-        };
+        function renderKanbanVendas(vendas) {
+            const cols = ['col-vistoria','col-boletos','col-pagamento','col-concluido'];
+            const map = ['Fazer Vistoria','Mandar Boletos','Falta Pagamento','Pagamento Efetuado'];
+            cols.forEach((id, i) => {
+                document.getElementById(id).innerHTML = vendas.filter(v => v.status === map[i]).map(v => `
+                    <div class="v-card" data-id="${v.id}">
+                        <input type="checkbox" class="check-venda check-card" value="${v.id}">
+                        <div onclick="preparaEdicaoVenda('${v.id}')">
+                            <h4 class="text-[11px] font-black uppercase text-white truncate pr-6">${v.cliente}</h4>
+                            <p class="text-[10px] text-blue-400 font-bold mb-3">${v.tel}</p>
+                            <div class="badge-valor w-full mb-2"><span class="text-[7px] uppercase font-bold text-gray-500">Prêmio</span><span class="text-[11px] font-bold text-white">${formatBRL(v.valor)}</span></div>
+                            <div class="flex gap-2"><div class="badge-valor"><span class="text-[7px] uppercase font-bold text-blue-500">Cheia</span><span class="text-[10px] font-bold">${formatBRL(v.comissao_cheia)}</span></div><div class="badge-valor"><span class="text-[7px] uppercase font-bold text-green-500">Vend.</span><span class="text-[10px] font-bold">${formatBRL(v.comissao_vendedor)}</span></div></div>
+                        </div>
+                    </div>`).join('');
+            });
+        }
 
-        window.openModalIndicacaoNovo = () => {
-            document.getElementById('ind_id').value = ""; // Limpa ID para ser NOVO
-            document.getElementById('formIndicacao').reset();
-            document.getElementById('modalIndTitle').textContent = "Nova Indicação";
-            openModal('modalIndicacao');
-        };
+        function renderKanbanIndicacoes(ind) {
+            const cols = ['ind-col-nova','ind-col-whats','ind-col-cotacao','ind-col-atencao'];
+            const map = ['NOVA INDICAÇÃO','WHATSAPP','COTAÇÃO REALIZADA','COBRAR ATENÇÃO'];
+            cols.forEach((id, i) => {
+                document.getElementById(id).innerHTML = ind.filter(x => x.status === map[i]).map(x => `<div class="v-card border-l-yellow-500" data-id="${x.id}"><input type="checkbox" class="check-ind check-card" value="${x.id}"><div onclick="preparaEdicaoIndicacao('${x.id}')"><h4 class="text-[11px] font-black uppercase text-white truncate pr-6">${x.cliente}</h4><p class="text-[10px] text-blue-400 font-bold mb-1">${x.tel}</p></div></div>`).join('');
+            });
+        }
 
+        async function EXCLUIR_ITEM_DIRETO(col) { if(confirm("Apagar?")) { await window.cloud.apagar(col, (col==='vendas'?document.getElementById('v_id').value : col==='usuarios'?document.getElementById('u_id').value : document.getElementById('ind_id').value)); closeModal('modalVenda'); closeModal('modalIndicacao'); closeModal('modalUsuario'); } }
+        async function EXCLUIR_MASSA(col) { const sels = document.querySelectorAll(col==='vendas'?'.check-venda:checked':'.check-ind:checked'); if(sels.length && confirm("Confirmar?")) { for(let c of sels) await window.cloud.apagar(col, c.value); } }
+        async function LIMPAR_PRODUCAO_TOTAL() { if(confirm("Zerar produção?")) { for(let v of window.cloud.vendas) await window.cloud.apagar('vendas', v.id); } }
+        
+        window.openModalProducaoNovo = () => { document.getElementById('v_id').value = ""; document.getElementById('formVenda').reset(); openModal('modalVenda'); };
+        window.openModalIndicacaoNovo = () => { document.getElementById('ind_id').value = ""; document.getElementById('formIndicacao').reset(); openModal('modalIndicacao'); };
+        
         window.preparaEdicaoVenda = (id) => {
             const v = window.cloud.vendas.find(x => x.id === id);
-            if(!v) return;
-            document.getElementById('v_id').value = v.id; // Define ID para ser EDITAR
-            document.getElementById('modalVendaTitle').textContent = "Editando Cliente";
+            document.getElementById('v_id').value = v.id;
             document.getElementById('v_cliente').value = v.cliente;
             document.getElementById('v_tel').value = v.tel;
             document.getElementById('v_vendedor').value = v.vendedor;
@@ -422,9 +425,7 @@
 
         window.preparaEdicaoIndicacao = (id) => {
             const i = window.cloud.indicacoes.find(x => x.id === id);
-            if(!i) return;
             document.getElementById('ind_id').value = i.id;
-            document.getElementById('modalIndTitle').textContent = "Editando Indicação";
             document.getElementById('ind_cliente').value = i.cliente;
             document.getElementById('ind_tel').value = i.tel;
             document.getElementById('ind_veiculo').value = i.veiculo;
@@ -435,63 +436,18 @@
             openModal('modalIndicacao');
         };
 
-        // --- SUBMITS ---
-        document.getElementById('formVenda').onsubmit = async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('v_id').value;
-            await window.cloud.salvarVenda({
-                id: id,
-                cliente: document.getElementById('v_cliente').value.toUpperCase(),
-                tel: document.getElementById('v_tel').value,
-                vendedor: document.getElementById('v_vendedor').value,
-                valor: document.getElementById('v_valor').value,
-                comissao_cheia: document.getElementById('v_comissao_cheia').value,
-                comissao_vendedor: document.getElementById('v_comissao_vendedor').value,
-                suhai: document.getElementById('v_suhai').checked,
-                status: document.getElementById('v_status').value
-            });
-            closeModal('modalVenda');
-        };
+        document.getElementById('formVenda').onsubmit = async (e) => { e.preventDefault(); await window.cloud.salvarVenda({ id: document.getElementById('v_id').value, cliente: document.getElementById('v_cliente').value.toUpperCase(), tel: document.getElementById('v_tel').value, vendedor: document.getElementById('v_vendedor').value, valor: document.getElementById('v_valor').value, comissao_cheia: document.getElementById('v_comissao_cheia').value, comissao_vendedor: document.getElementById('v_comissao_vendedor').value, suhai: document.getElementById('v_suhai').checked, status: document.getElementById('v_status').value }); closeModal('modalVenda'); };
+        document.getElementById('formIndicacao').onsubmit = async (e) => { e.preventDefault(); await window.cloud.salvarIndicacao({ id: document.getElementById('ind_id').value, cliente: document.getElementById('ind_cliente').value.toUpperCase(), tel: document.getElementById('ind_tel').value, veiculo: document.getElementById('ind_veiculo').value.toUpperCase(), vendedor: document.getElementById('ind_vendedor').value, suhai: document.getElementById('ind_suhai').checked, info: document.getElementById('ind_info').value.toUpperCase(), status: document.getElementById('ind_status').value }); closeModal('modalIndicacao'); };
+        document.getElementById('formAdminIndicacao').onsubmit = async (e) => { e.preventDefault(); await window.cloud.salvarIndicacao({ cliente: document.getElementById('adm_ind_cliente').value.toUpperCase(), tel: document.getElementById('adm_ind_tel').value, veiculo: document.getElementById('adm_ind_veiculo').value.toUpperCase(), vendedor: document.getElementById('adm_ind_vendedor').value, suhai: document.getElementById('adm_ind_suhai').checked, info: document.getElementById('adm_ind_info').value.toUpperCase(), status: 'NOVA INDICAÇÃO' }); alert('OK!'); e.target.reset(); };
 
-        document.getElementById('formIndicacao').onsubmit = async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('ind_id').value;
-            await window.cloud.salvarIndicacao({
-                id: id,
-                cliente: document.getElementById('ind_cliente').value.toUpperCase(),
-                tel: document.getElementById('ind_tel').value,
-                veiculo: document.getElementById('ind_veiculo').value.toUpperCase(),
-                vendedor: document.getElementById('ind_vendedor').value,
-                suhai: document.getElementById('ind_suhai').checked,
-                info: document.getElementById('ind_info').value.toUpperCase(),
-                status: document.getElementById('ind_status').value
-            });
-            closeModal('modalIndicacao');
-        };
-
-        document.getElementById('formAdminIndicacao').onsubmit = async (e) => {
-            e.preventDefault();
-            await window.cloud.salvarIndicacao({
-                cliente: document.getElementById('adm_ind_cliente').value.toUpperCase(),
-                tel: document.getElementById('adm_ind_tel').value,
-                veiculo: document.getElementById('adm_ind_veiculo').value.toUpperCase(),
-                vendedor: document.getElementById('adm_ind_vendedor').value,
-                suhai: document.getElementById('adm_ind_suhai').checked,
-                info: document.getElementById('adm_ind_info').value.toUpperCase(),
-                status: 'NOVA INDICAÇÃO'
-            });
-            alert('Lead Enviado!'); e.target.reset();
-        };
-
-        // --- UTILS ---
         function initSortable() {
-            document.querySelectorAll('.sortable-list').forEach(col => new Sortable(col, { group: 'prod', animation: 200, onEnd: async (e) => await window.cloud.updateStatusVenda(e.item.getAttribute('data-id'), e.to.getAttribute('data-status')) }));
-            document.querySelectorAll('.sortable-list-ind').forEach(col => new Sortable(col, { group: 'ind', animation: 200, onEnd: async (e) => await window.cloud.updateStatusInd(e.item.getAttribute('data-id'), e.to.getAttribute('data-status')) }));
+            document.querySelectorAll('.sortable-list').forEach(col => new Sortable(col, { group: 'prod', animation: 200, onEnd: async (e) => await window.cloud.updateStatus('vendas', e.item.getAttribute('data-id'), e.to.getAttribute('data-status')) }));
+            document.querySelectorAll('.sortable-list-ind').forEach(col => new Sortable(col, { group: 'ind', animation: 200, onEnd: async (e) => await window.cloud.updateStatus('indicacoes', e.item.getAttribute('data-id'), e.to.getAttribute('data-status')) }));
         }
-        function showSection(id, btn) { document.querySelectorAll('.section').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); btn.classList.add('active'); }
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; document.querySelectorAll('input[type="hidden"]').forEach(i => i.value = ""); }
-        function renderVendedores() { if(!currentUser.isAdmin) return; document.getElementById('gridVendedores').innerHTML = window.cloud.usuarios.map(u => `<div class="v-card border-l-red-500"><h4 class="text-[11px] font-black uppercase text-white truncate">${u.nome}</h4></div>`).join(''); }
+        function showSection(id, btn) { document.querySelectorAll('.section').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); btn.classList.add('active'); }
+        function renderLinks() { document.getElementById('containerLinks').innerHTML = (window.cloud.links || []).map(l => `<div class="bg-[#111827] p-6 rounded-2xl border border-gray-800"><p class="text-[11px] font-black uppercase text-blue-400 mb-2">${l.nome}</p><a href="${l.url}" target="_blank" class="bg-blue-600/20 text-blue-400 py-2 px-4 rounded-lg block text-center text-[10px] font-bold">Acessar</a></div>`).join(''); }
     </script>
 </body>
 </html>
