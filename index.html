@@ -25,6 +25,15 @@
         .badge-valor { background: rgba(15, 23, 42, 0.8); border: 1px solid #334155; padding: 4px 8px; border-radius: 6px; display: flex; flex-direction: column; flex: 1; text-align: center; }
         input, select, textarea { background: #0f172a !important; color: white !important; border: 1px solid #1e293b !important; outline: none; }
         .check-card { position: absolute; top: 12px; right: 12px; width: 18px; height: 18px; accent-color: #ef4444; z-index: 50; cursor: pointer; }
+        
+        /* ANIMAÇÃO S DA SUHAI */
+        @keyframes piscaSuave {
+            0% { opacity: 1; color: #10b981; }
+            50% { opacity: 0.2; color: #064e3b; }
+            100% { opacity: 1; color: #10b981; }
+        }
+        .s-suhai { animation: piscaSuave 2.5s infinite; font-weight: 900; font-size: 12px; margin-top: 2px; display: block; }
+        
         .progress-container { background: #1e293b; border-radius: 20px; height: 12px; width: 100%; overflow: hidden; border: 1px solid #334155; }
         .progress-bar { background: linear-gradient(90deg, #3b82f6, #10b981); height: 100%; transition: width 0.5s ease-in-out; }
     </style>
@@ -55,6 +64,7 @@
         </header>
 
         <div class="flex flex-1 overflow-hidden">
+            <!-- SIDEBAR -->
             <aside class="w-64 bg-[#111827] border-r border-gray-800 hidden md:block overflow-y-auto scrollbar-thin">
                 <nav class="p-4 space-y-1">
                     <button onclick="showSection('dashboard', this)" class="nav-item active w-full text-left p-3 rounded-xl text-[11px] font-bold uppercase"><i class="fas fa-tachometer-alt w-8"></i>Dashboard</button>
@@ -79,7 +89,7 @@
 
             <main class="flex-1 p-6 overflow-y-auto bg-[#0b0f1a] scrollbar-thin">
                 
-                <!-- DASHBOARD (MÉTRICAS HOJE) -->
+                <!-- DASHBOARD -->
                 <div id="dashboard" class="section active">
                     <h2 class="text-2xl font-bold uppercase mb-8 text-white tracking-tighter">Performance Hoje</h2>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
@@ -87,41 +97,63 @@
                         <div class="bg-[#111827] p-6 rounded-2xl border border-green-900/30 text-center"><p class="text-gray-500 text-[10px] font-bold uppercase mb-2">Comissão Hoje</p><h2 id="dashComissaoHoje" class="text-4xl font-bold text-green-500">R$ 0,00</h2></div>
                         <div class="bg-[#111827] p-6 rounded-2xl border border-gray-800 text-center"><p class="text-gray-500 text-[10px] font-bold uppercase mb-2">Prêmio Líquido Hoje</p><h2 id="dashPremioHoje" class="text-4xl font-bold text-white">R$ 0,00</h2></div>
                     </div>
-                    <h2 class="text-2xl font-bold uppercase mb-8 text-white tracking-tighter">Progresso das Metas</h2>
+                    <h2 class="text-2xl font-bold uppercase mb-8 text-white tracking-tighter">Acompanhamento de Metas</h2>
                     <div id="containerMetasDashboard" class="grid grid-cols-1 md:grid-cols-3 gap-8"></div>
                 </div>
 
-                <!-- PÁGINA DISTRIBUIR LEADS -->
-                <div id="cadastrar-indicacao" class="section">
-                    <div class="max-w-xl mx-auto bg-[#111827] p-8 rounded-3xl border border-gray-800 shadow-xl">
-                        <h2 class="text-xl font-bold uppercase text-yellow-500 mb-6 text-center">Distribuir Novo Lead</h2>
-                        <form id="formAdminIndicacao" class="space-y-4">
-                            <input type="text" id="adm_ind_cliente" placeholder="NOME DO CLIENTE" class="w-full p-4 border border-gray-800 rounded-xl uppercase">
-                            <input type="text" id="adm_ind_tel" placeholder="WHATSAPP" class="w-full p-4 border border-gray-800 rounded-xl">
-                            <input type="text" id="adm_ind_veiculo" placeholder="VEÍCULO" class="w-full p-4 border border-gray-800 rounded-xl uppercase">
-                            <select id="adm_ind_vendedor" class="w-full p-4 border border-gray-800 rounded-xl uppercase"></select>
-                            <div class="flex items-center gap-3 p-4 bg-gray-900 border border-gray-800 rounded-xl"><input type="checkbox" id="adm_ind_suhai" class="w-5 h-5 accent-green-500"><label for="adm_ind_suhai" class="text-[11px] font-bold uppercase text-green-400">Lead Especial Suhai</label></div>
-                            <textarea id="adm_ind_info" placeholder="OBSERVAÇÕES" class="w-full p-4 border border-gray-800 rounded-xl uppercase h-24 outline-none"></textarea>
-                            <button type="submit" class="w-full bg-yellow-600 p-4 rounded-xl font-black uppercase text-black hover:bg-yellow-500 transition">Enviar para Kanban do Vendedor</button>
-                        </form>
+                <!-- INDICAÇÕES -->
+                <div id="kanban-indicacoes" class="section">
+                    <div class="flex justify-between items-center mb-8">
+                        <h2 class="text-2xl font-bold uppercase text-blue-500 tracking-tighter">Fluxo de Indicações</h2>
+                        <div class="flex gap-2">
+                            <button onclick="EXCLUIR_MASSA('indicacoes')" class="bg-red-600/20 text-red-500 border border-red-600/50 px-4 py-2 rounded-xl font-bold text-[10px] uppercase transition">Excluir Selecionados</button>
+                            <button onclick="openModalIndicacaoNovo()" class="bg-yellow-600 px-6 py-2 rounded-xl font-bold text-[11px] uppercase text-black transition">+ Manual</button>
+                        </div>
+                    </div>
+                    <div class="kanban-wrapper scrollbar-thin">
+                        <div class="kanban-column"><h3 class="text-[11px] font-black mb-6 uppercase text-gray-400 text-center border-b border-gray-800 pb-4">Nova</h3><div id="ind-col-nova" data-status="NOVA INDICAÇÃO" class="sortable-list-ind space-y-4 min-h-[500px]"></div></div>
+                        <div class="kanban-column"><h3 class="text-[11px] font-black mb-6 uppercase text-gray-400 text-center border-b border-gray-800 pb-4">WhatsApp</h3><div id="ind-col-whats" data-status="WHATSAPP" class="sortable-list-ind space-y-4 min-h-[500px]"></div></div>
+                        <div class="kanban-column"><h3 class="text-[11px] font-black mb-6 uppercase text-gray-400 text-center border-b border-gray-800 pb-4">Cotação</h3><div id="ind-col-cotacao" data-status="COTAÇÃO REALIZADA" class="sortable-list-ind space-y-4 min-h-[500px]"></div></div>
+                        <div class="kanban-column"><h3 class="text-[11px] font-black mb-6 uppercase text-red-500 text-center border-b border-red-900 pb-4">Atenção</h3><div id="ind-col-atencao" data-status="COBRAR ATENÇÃO" class="sortable-list-ind space-y-4 min-h-[500px]"></div></div>
                     </div>
                 </div>
 
-                <!-- VENDEDORES (EDITÁVEL) -->
+                <!-- PRODUÇÃO -->
+                <div id="kanban-vendas" class="section">
+                    <div class="flex justify-between items-center mb-8"><h2 class="text-2xl font-bold uppercase text-blue-500">Produção</h2><div class="flex gap-2"><button onclick="EXCLUIR_MASSA('vendas')" class="bg-red-600/20 text-red-500 border border-red-600/50 px-4 py-2 rounded-xl font-bold text-[10px] uppercase hover:bg-red-600 hover:text-white transition">Excluir Selecionados</button><button onclick="openModalProducaoNovo()" class="bg-blue-600 px-6 py-2 rounded-xl font-bold text-[11px] uppercase">+ Produção</button></div></div>
+                    <div class="kanban-wrapper scrollbar-thin">
+                        <div class="kanban-column"><h3 class="text-[11px] font-black mb-6 uppercase text-gray-400 text-center border-b border-gray-800 pb-4">Vistoria</h3><div id="col-vistoria" data-status="Fazer Vistoria" class="sortable-list space-y-4 min-h-[500px]"></div></div>
+                        <div class="kanban-column"><h3 class="text-[11px] font-black mb-6 uppercase text-gray-400 text-center border-b border-gray-800 pb-4">Boletos</h3><div id="col-boletos" data-status="Mandar Boletos" class="sortable-list space-y-4 min-h-[500px]"></div></div>
+                        <div class="kanban-column"><h3 class="text-[11px] font-black mb-6 uppercase text-gray-400 text-center border-b border-gray-800 pb-4">Pagamento</h3><div id="col-pagamento" data-status="Falta Pagamento" class="sortable-list space-y-4 min-h-[500px]"></div></div>
+                        <div class="kanban-column"><h3 class="text-[11px] font-black mb-6 uppercase text-green-500 text-center border-b border-green-900 pb-4">Concluído</h3><div id="col-concluido" data-status="Pagamento Efetuado" class="sortable-list space-y-4 min-h-[500px]"></div></div>
+                    </div>
+                </div>
+
+                <!-- FINANCEIRO -->
+                <div id="comissao" class="section">
+                    <h2 class="text-2xl font-bold uppercase text-green-500 mb-8 tracking-tighter">Financeiro Realizado</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-center">
+                        <div class="bg-[#111827] p-8 rounded-2xl border border-green-900/30"><p id="labelComissaoBox" class="text-gray-500 text-[10px] font-bold uppercase mb-2"></p><h2 id="totalComissaoBox" class="text-5xl font-bold text-green-500">R$ 0,00</h2></div>
+                        <div class="bg-[#111827] p-8 rounded-2xl border border-gray-800"><p class="text-gray-500 text-[10px] font-bold uppercase mb-2">Volume Líquido</p><h2 id="totalPremioBox" class="text-5xl font-bold text-white">R$ 0,00</h2></div>
+                    </div>
+                    <div class="bg-[#111827] rounded-xl border border-gray-800 overflow-hidden mt-8"><table class="w-full text-left text-sm"><thead class="bg-gray-800 text-gray-400 text-[10px] uppercase"><tr><th class="p-4">Cliente</th><th class="p-4">Prêmio Líquido</th><th class="p-4">Comissão</th><th class="p-4">Data</th></tr></thead><tbody id="tableComissoesReal"></tbody></table></div>
+                </div>
+
+                <!-- VENDEDORES -->
                 <div id="vendedores" class="section">
                     <div class="flex justify-between items-center mb-8">
-                        <h2 class="text-2xl font-bold uppercase text-red-500 tracking-tighter">Equipe de Vendas</h2>
+                        <h2 class="text-2xl font-bold uppercase text-red-500 tracking-tighter">Equipe</h2>
                         <button onclick="openModalUsuarioNovo()" class="bg-red-600 px-6 py-2 rounded-xl font-bold text-[11px] uppercase">+ Novo Vendedor</button>
                     </div>
                     <div id="gridVendedores" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
                 </div>
 
-                <!-- LEAD SUHAI (AUDITORIA) -->
+                <!-- LEAD SUHAI -->
                 <div id="lead-suhai-page" class="section">
-                    <h2 class="text-2xl font-bold uppercase text-green-400 mb-8 tracking-tighter">Relatório Lead Suhai</h2>
+                    <h2 class="text-2xl font-bold uppercase text-green-400 mb-8 tracking-tighter">Lead Suhai (Concluídos)</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-center">
                         <div class="bg-green-900/10 p-8 rounded-2xl border border-green-500/20 text-center"><p class="text-gray-400 text-[10px] font-bold uppercase mb-2">Total Prêmio Suhai</p><h2 id="suhaiSomaPremio" class="text-4xl font-bold text-white">R$ 0,00</h2></div>
-                        <div class="bg-green-900/10 p-8 rounded-2xl border border-green-500/20 text-center"><p class="text-gray-400 text-[10px] font-bold uppercase mb-2">Total Comissão Suhai (E)</p><h2 id="suhaiSomaComis" class="text-4xl font-bold text-green-500">R$ 0,00</h2></div>
+                        <div class="bg-green-900/10 p-8 rounded-2xl border border-green-500/20 text-center"><p class="text-gray-400 text-[10px] font-bold uppercase mb-2">Comissão Empresa Suhai</p><h2 id="suhaiSomaComis" class="text-4xl font-bold text-green-500">R$ 0,00</h2></div>
                     </div>
                     <div class="bg-[#111827] rounded-xl border border-gray-800 overflow-hidden"><table class="w-full text-left text-sm"><thead class="bg-gray-800 text-gray-400 text-[10px] uppercase"><tr><th class="p-4">Cliente</th><th class="p-4">Vendedor</th><th class="p-4">Prêmio</th><th class="p-4">Comissão Empresa</th></tr></thead><tbody id="tableSuhaiConcluidos"></tbody></table></div>
                 </div>
@@ -135,57 +167,39 @@
                             <div><label class="text-[10px] font-bold text-gray-500 uppercase mb-2 block">Meta Salário (R$)</label><input type="number" id="meta_salario" class="w-full p-3 rounded-xl border border-gray-800"></div>
                             <div><label class="text-[10px] font-bold text-gray-500 uppercase mb-2 block">Meta Prêmio (R$)</label><input type="number" id="meta_premio" class="w-full p-3 rounded-xl border border-gray-800"></div>
                             <div><label class="text-[10px] font-bold text-gray-500 uppercase mb-2 block">Meta Vendas (Qtd)</label><input type="number" id="meta_qtd" class="w-full p-3 rounded-xl border border-gray-800"></div>
-                            <div class="md:col-span-4"><button type="submit" class="w-full bg-blue-600 p-4 rounded-xl font-bold uppercase text-xs hover:bg-blue-500 transition">Salvar Metas</button></div>
+                            <div class="md:col-span-4"><button type="submit" class="w-full bg-blue-600 p-4 rounded-xl font-bold uppercase text-xs">Salvar Metas</button></div>
                         </form>
                     </div>
                 </div>
 
-                <!-- PRODUÇÃO -->
-                <div id="kanban-vendas" class="section">
-                    <div class="flex justify-between items-center mb-8"><h2 class="text-2xl font-bold uppercase text-blue-500">Produção</h2><div class="flex gap-2"><button onclick="EXCLUIR_MASSA('vendas')" class="bg-red-600/20 text-red-500 border border-red-600/50 px-4 py-2 rounded-xl font-bold text-[10px] uppercase transition hover:bg-red-600 hover:text-white">Excluir Selecionados</button><button onclick="openModalProducaoNovo()" class="bg-blue-600 px-6 py-2 rounded-xl font-bold text-[11px] uppercase">+ Produção</button></div></div>
-                    <div class="kanban-wrapper scrollbar-thin">
-                        <div class="kanban-column"><h3 class="text-[11px] font-black mb-6 uppercase text-gray-400 text-center border-b border-gray-800 pb-4">Vistoria</h3><div id="col-vistoria" data-status="Fazer Vistoria" class="sortable-list space-y-4 min-h-[500px]"></div></div>
-                        <div class="kanban-column"><h3 class="text-[11px] font-black mb-6 uppercase text-gray-400 text-center border-b border-gray-800 pb-4">Boletos</h3><div id="col-boletos" data-status="Mandar Boletos" class="sortable-list space-y-4 min-h-[500px]"></div></div>
-                        <div class="kanban-column"><h3 class="text-[11px] font-black mb-6 uppercase text-gray-400 text-center border-b border-gray-800 pb-4">Pagamento</h3><div id="col-pagamento" data-status="Falta Pagamento" class="sortable-list space-y-4 min-h-[500px]"></div></div>
-                        <div class="kanban-column"><h3 class="text-[11px] font-black mb-6 uppercase text-green-500 text-center border-b border-green-900 pb-4">Concluído</h3><div id="col-concluido" data-status="Pagamento Efetuado" class="sortable-list space-y-4 min-h-[500px]"></div></div>
-                    </div>
+                <!-- CONFIGURAÇÕES -->
+                <div id="configuracoes" class="section">
+                    <h2 class="text-2xl font-bold uppercase text-gray-400 mb-8">Manutenção</h2>
+                    <button onclick="LIMPAR_PRODUCAO_TOTAL()" class="bg-red-600/10 text-red-500 border border-red-600 p-4 rounded-xl font-bold text-[10px] uppercase transition hover:bg-red-600 hover:text-white">Limpar Todo Banco de Produção</button>
                 </div>
 
-                <!-- INDICAÇÕES -->
-                <div id="kanban-indicacoes" class="section">
-                    <div class="flex justify-between items-center mb-8"><h2 class="text-2xl font-bold uppercase text-blue-500">Indicações</h2><div class="flex gap-2"><button onclick="EXCLUIR_MASSA('indicacoes')" class="bg-red-600/20 text-red-500 border border-red-600/50 px-4 py-2 rounded-xl font-bold text-[10px] uppercase">Excluir Selecionados</button><button onclick="openModalIndicacaoNovo()" class="bg-yellow-600 px-6 py-2 rounded-xl font-bold text-[11px] uppercase text-black">+ Manual</button></div></div>
-                    <div class="kanban-wrapper scrollbar-thin">
-                        <div class="kanban-column"><h3 class="text-[11px] font-black mb-6 uppercase text-gray-400 text-center border-b border-gray-800 pb-4">Nova</h3><div id="ind-col-nova" data-status="NOVA INDICAÇÃO" class="sortable-list-ind space-y-4 min-h-[500px]"></div></div>
-                        <div class="kanban-column"><h3 class="text-[11px] font-black mb-6 uppercase text-gray-400 text-center border-b border-gray-800 pb-4">WhatsApp</h3><div id="ind-col-whats" data-status="WHATSAPP" class="sortable-list-ind space-y-4 min-h-[500px]"></div></div>
-                        <div class="kanban-column"><h3 class="text-[11px] font-black mb-6 uppercase text-gray-400 text-center border-b border-gray-800 pb-4">Cotação</h3><div id="ind-col-cotacao" data-status="COTAÇÃO REALIZADA" class="sortable-list-ind space-y-4 min-h-[500px]"></div></div>
-                        <div class="kanban-column"><h3 class="text-[11px] font-black mb-6 uppercase text-red-500 text-center border-b border-red-900 pb-4">Atenção</h3><div id="ind-col-atencao" data-status="COBRAR ATENÇÃO" class="sortable-list-ind space-y-4 min-h-[500px]"></div></div>
+                <!-- DISTRIBUIR LEADS -->
+                <div id="cadastrar-indicacao" class="section">
+                    <div class="max-w-xl mx-auto bg-[#111827] p-8 rounded-3xl border border-gray-800 shadow-xl">
+                        <h2 class="text-xl font-bold uppercase text-yellow-500 mb-6 text-center">Distribuir Lead</h2>
+                        <form id="formAdminIndicacao" class="space-y-4">
+                            <input type="text" id="adm_ind_cliente" placeholder="NOME DO CLIENTE" class="w-full p-4 border border-gray-800 rounded-xl uppercase">
+                            <input type="text" id="adm_ind_tel" placeholder="WHATSAPP" class="w-full p-4 border border-gray-800 rounded-xl">
+                            <input type="text" id="adm_ind_veiculo" placeholder="VEÍCULO" class="w-full p-4 border border-gray-800 rounded-xl uppercase">
+                            <select id="adm_ind_vendedor" class="w-full p-4 border border-gray-800 rounded-xl uppercase"></select>
+                            <div class="flex items-center gap-3 p-4 bg-gray-900 border border-gray-800 rounded-xl"><input type="checkbox" id="adm_ind_suhai" class="w-5 h-5 accent-green-500"><label for="adm_ind_suhai" class="text-[11px] font-bold uppercase text-green-400">Lead Especial Suhai</label></div>
+                            <textarea id="adm_ind_info" placeholder="OBSERVAÇÕES" class="w-full p-4 border border-gray-800 rounded-xl uppercase h-24 outline-none"></textarea>
+                            <button type="submit" class="w-full bg-yellow-600 p-4 rounded-xl font-black uppercase text-black hover:bg-yellow-500 transition">Enviar ao Vendedor</button>
+                        </form>
                     </div>
-                </div>
-
-                <!-- FINANCEIRO -->
-                <div id="comissao" class="section">
-                    <h2 class="text-2xl font-bold uppercase text-green-500 mb-8 tracking-tighter">Financeiro Realizado</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-center">
-                        <div class="bg-[#111827] p-8 rounded-2xl border border-green-900/30"><p id="labelComissaoBox" class="text-gray-500 text-[10px] font-bold uppercase mb-2"></p><h2 id="totalComissaoBox" class="text-5xl font-bold text-green-500">R$ 0,00</h2></div>
-                        <div class="bg-[#111827] p-8 rounded-2xl border border-gray-800"><p class="text-gray-500 text-[10px] font-bold uppercase mb-2">Volume Líquido</p><h2 id="totalPremioBox" class="text-5xl font-bold text-white">R$ 0,00</h2></div>
-                    </div>
-                    <div class="bg-[#111827] rounded-xl border border-gray-800 overflow-hidden mt-8"><table class="w-full text-left text-sm"><thead class="bg-gray-800 text-gray-400 text-[10px] uppercase"><tr><th class="p-4">Cliente</th><th class="p-4">Prêmio Líquido</th><th class="p-4">Sua Comissão</th><th class="p-4">Data</th></tr></thead><tbody id="tableComissoesReal"></tbody></table></div>
                 </div>
 
                 <!-- LINKS ÚTEIS -->
                 <div id="links-uteis" class="section">
-                    <div class="flex justify-between items-center mb-8"><h2 class="text-2xl font-bold uppercase text-white tracking-tighter">Links Úteis</h2><button onclick="addNovoLink()" class="bg-blue-600 px-4 py-2 rounded-lg font-bold text-[10px] uppercase">+ Novo Link</button></div>
+                    <h2 class="text-2xl font-bold uppercase text-white mb-8 tracking-tighter">Links Úteis</h2>
                     <div id="containerLinks" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
                 </div>
 
-                <!-- CONFIGURAÇÕES -->
-                <div id="configuracoes" class="section">
-                    <h2 class="text-2xl font-bold uppercase text-gray-400 mb-8 tracking-tighter">Configurações</h2>
-                    <div class="bg-[#111827] p-8 rounded-3xl border border-gray-800 max-w-md">
-                        <h4 class="text-red-500 font-bold uppercase text-xs mb-4">Limpeza do Sistema</h4>
-                        <button onclick="LIMPAR_PRODUCAO_TOTAL()" class="w-full bg-red-600/20 text-red-500 border border-red-600 p-4 rounded-xl font-bold text-[10px] uppercase hover:bg-red-600 hover:text-white transition">Limpar Banco de Produção</button>
-                    </div>
-                </div>
             </main>
         </div>
     </div>
@@ -209,7 +223,7 @@
         </div>
     </div>
 
-    <!-- MODAIS PRODUÇÃO E INDICAÇÃO -->
+    <!-- MODAL PRODUÇÃO -->
     <div id="modalVenda" class="fixed inset-0 bg-black/95 hidden items-center justify-center z-[100] p-4">
         <div class="bg-[#111827] p-8 rounded-3xl w-full max-w-md border border-gray-800 shadow-2xl">
             <h3 class="text-xl font-bold mb-6 uppercase text-blue-400" id="modalVendaTitle">Produção</h3>
@@ -232,6 +246,7 @@
         </div>
     </div>
 
+    <!-- MODAL INDICAÇÃO -->
     <div id="modalIndicacao" class="fixed inset-0 bg-black/95 hidden items-center justify-center z-[110] p-4">
         <div class="bg-[#111827] p-8 rounded-3xl w-full max-w-md border border-gray-800 shadow-2xl">
             <h3 class="text-xl font-bold mb-6 uppercase text-yellow-500" id="modalIndTitle">Indicação</h3>
@@ -249,7 +264,7 @@
         </div>
     </div>
 
-    <!-- FIREBASE -->
+    <!-- FIREBASE CORE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -308,6 +323,7 @@
             const today = new Date().setHours(0,0,0,0);
             const myV = currentUser.isAdmin ? window.cloud.vendas : window.cloud.vendas.filter(v => v.vendedor === currentUser.nome);
             
+            // DASHBOARD HOJE
             const vHoje = myV.filter(v => v.dataCriacao >= today);
             document.getElementById('dashVendasHoje').textContent = vHoje.length;
             document.getElementById('dashComissaoHoje').textContent = formatBRL(vHoje.reduce((a,b) => a + parseFloat(currentUser.isAdmin ? (b.comissao_cheia || 0) : (b.comissao_vendedor || 0)), 0));
@@ -338,116 +354,79 @@
                 const realP = userVendas.reduce((a,b) => a + parseFloat(b.valor || 0), 0);
                 const pC = Math.min((realC / (meta.meta_salario || 1)) * 100, 100);
                 const pP = Math.min((realP / (meta.meta_premio || 1)) * 100, 100);
-                container.innerHTML += `<div class="bg-[#111827] p-6 rounded-3xl border border-gray-800"><h4 class="text-xs font-bold uppercase text-blue-400 mb-4">${u.nome}</h4><div class="space-y-4"><div><p class="text-[9px] text-gray-500 uppercase mb-1">Salário: ${formatBRL(realC)} / ${formatBRL(meta.meta_salario)}</p><div class="progress-container"><div class="progress-bar" style="width:${pC}%"></div></div></div><div><p class="text-[9px] text-gray-500 uppercase mb-1">Prêmio: ${formatBRL(realP)} / ${formatBRL(meta.meta_premio)}</p><div class="progress-container"><div class="progress-bar" style="width:${pP}%"></div></div></div></div></div>`;
+                container.innerHTML += `<div class="bg-[#111827] p-6 rounded-3xl border border-gray-800">
+                    <h4 class="text-xs font-bold uppercase text-blue-400 mb-4">${u.nome}</h4>
+                    <div class="space-y-4">
+                        <div><p class="text-[9px] text-gray-500 uppercase mb-1">Salário: ${formatBRL(realC)} / ${formatBRL(meta.meta_salario)}</p><div class="progress-container"><div class="progress-bar" style="width:${pC}%"></div></div></div>
+                        <div><p class="text-[9px] text-gray-500 uppercase mb-1">Prêmio: ${formatBRL(realP)} / ${formatBRL(meta.meta_premio)}</p><div class="progress-container"><div class="progress-bar" style="width:${pP}%"></div></div></div>
+                    </div>
+                </div>`;
             });
         }
 
-        document.getElementById('formMetas').onsubmit = async (e) => { e.preventDefault(); await window.cloud.salvarMeta({ vendedor: document.getElementById('meta_vendedor').value, meta_salario: document.getElementById('meta_salario').value, meta_premio: document.getElementById('meta_premio').value, meta_qtd: document.getElementById('meta_qtd').value }); alert("OK!"); };
-
-        function renderVendedores() {
-            if(!currentUser.isAdmin) return;
-            document.getElementById('gridVendedores').innerHTML = window.cloud.usuarios.map(u => `<div class="v-card border-l-red-500" onclick="preparaEdicaoUsuario('${u.id}')"><h4 class="text-[11px] font-black uppercase text-white truncate">${u.nome}</h4><p class="text-[9px] text-gray-400 mt-2">LOGIN: ${u.login}</p><p class="text-[9px] text-gray-500 uppercase">FUNÇÃO: ${u.setor}</p></div>`).join('');
+        function renderKanbanIndicacoes(ind) {
+            const map = ['NOVA INDICAÇÃO', 'WHATSAPP', 'COTAÇÃO REALIZADA', 'COBRAR ATENÇÃO'];
+            const cols = ['ind-col-nova', 'ind-col-whats', 'ind-col-cotacao', 'ind-col-atencao'];
+            cols.forEach((id, i) => {
+                document.getElementById(id).innerHTML = ind.filter(x => x.status === map[i]).map(x => `
+                    <div class="v-card border-l-yellow-500" data-id="${x.id}">
+                        <input type="checkbox" class="check-ind check-card" value="${x.id}">
+                        <div onclick="preparaEdicaoIndicacao('${x.id}')">
+                            <h4 class="text-[11px] font-black uppercase text-white truncate pr-6">${x.cliente}</h4>
+                            <p class="text-[10px] text-gray-300 uppercase mt-1 font-bold">${x.veiculo || 'NÃO INFORMADO'}</p>
+                            ${x.suhai ? '<span class="s-suhai">S</span>' : ''}
+                            <p class="text-[10px] text-blue-400 font-bold mt-2"><i class="fab fa-whatsapp text-green-500 mr-1"></i>${x.tel}</p>
+                        </div>
+                    </div>`).join('');
+            });
         }
 
-        window.openModalUsuarioNovo = () => { document.getElementById('u_id').value = ""; document.getElementById('formUsuario').reset(); document.getElementById('btnDelUser').classList.add('hidden'); openModal('modalUsuario'); };
-        window.preparaEdicaoUsuario = (id) => {
-            const u = window.cloud.usuarios.find(x => x.id === id);
-            document.getElementById('u_id').value = u.id;
-            document.getElementById('u_nome').value = u.nome;
-            document.getElementById('u_login').value = u.login;
-            document.getElementById('u_senha').value = u.senha;
-            document.getElementById('u_setor').value = u.setor;
-            document.getElementById('u_comissao').value = u.comissao;
-            document.getElementById('btnDelUser').classList.remove('hidden');
-            openModal('modalUsuario');
-        };
-
-        document.getElementById('formUsuario').onsubmit = async (e) => { e.preventDefault(); await window.cloud.salvarUsuario({ id: document.getElementById('u_id').value, nome: document.getElementById('u_nome').value.toUpperCase(), login: document.getElementById('u_login').value.toLowerCase(), senha: document.getElementById('u_senha').value, setor: document.getElementById('u_setor').value, comissao: document.getElementById('u_comissao').value }); closeModal('modalUsuario'); };
-
+        // --- MANUTENÇÃO DE OUTROS RENDERS ---
         function renderFinanceiro(v) {
             document.getElementById('totalComissaoBox').textContent = formatBRL(v.reduce((a,b) => a + parseFloat(currentUser.isAdmin ? (b.comissao_cheia || 0) : (b.comissao_vendedor || 0)), 0));
             document.getElementById('totalPremioBox').textContent = formatBRL(v.reduce((a,b) => a + parseFloat(b.valor || 0), 0));
             document.getElementById('labelComissaoBox').textContent = currentUser.isAdmin ? "Comissão Empresa" : "Sua Comissão";
             document.getElementById('tableComissoesReal').innerHTML = v.map(x => `<tr class="border-b border-gray-800 text-[11px]"><td class="p-4 uppercase font-bold text-white">${x.cliente}</td><td class="p-4">${formatBRL(x.valor)}</td><td class="p-4 font-bold text-green-500">${formatBRL(currentUser.isAdmin ? x.comissao_cheia : x.comissao_vendedor)}</td><td class="p-4 text-gray-500">${new Date(x.dataCriacao).toLocaleDateString()}</td></tr>`).join('');
         }
-
         function renderSuhaiAuditoria(s) {
             document.getElementById('suhaiSomaPremio').textContent = formatBRL(s.reduce((a,b) => a + parseFloat(b.valor || 0), 0));
             document.getElementById('suhaiSomaComis').textContent = formatBRL(s.reduce((a,b) => a + parseFloat(b.comissao_cheia || 0), 0));
             document.getElementById('tableSuhaiConcluidos').innerHTML = s.map(x => `<tr class="border-b border-gray-800 text-[10px]"><td class="p-4 uppercase font-bold text-white">${x.cliente}</td><td class="p-4 uppercase text-gray-400">${x.vendedor}</td><td class="p-4 font-bold">${formatBRL(x.valor)}</td><td class="p-4 font-bold text-green-500">${currentUser.isAdmin ? formatBRL(x.comissao_cheia) : '***'}</td></tr>`).join('');
         }
-
         function renderKanbanVendas(vendas) {
-            const cols = ['col-vistoria','col-boletos','col-pagamento','col-concluido'];
-            const map = ['Fazer Vistoria','Mandar Boletos','Falta Pagamento','Pagamento Efetuado'];
-            cols.forEach((id, i) => {
-                document.getElementById(id).innerHTML = vendas.filter(v => v.status === map[i]).map(v => `
-                    <div class="v-card" data-id="${v.id}">
-                        <input type="checkbox" class="check-venda check-card" value="${v.id}">
-                        <div onclick="preparaEdicaoVenda('${v.id}')">
-                            <h4 class="text-[11px] font-black uppercase text-white truncate pr-6">${v.cliente}</h4>
-                            <p class="text-[10px] text-blue-400 font-bold mb-3">${v.tel}</p>
-                            <div class="badge-valor w-full mb-2"><span class="text-[7px] uppercase font-bold text-gray-500">Prêmio</span><span class="text-[11px] font-bold text-white">${formatBRL(v.valor)}</span></div>
-                            <div class="flex gap-2"><div class="badge-valor"><span class="text-[7px] uppercase font-bold text-blue-500">Cheia</span><span class="text-[10px] font-bold">${formatBRL(v.comissao_cheia)}</span></div><div class="badge-valor"><span class="text-[7px] uppercase font-bold text-green-500">Vend.</span><span class="text-[10px] font-bold">${formatBRL(v.comissao_vendedor)}</span></div></div>
-                        </div>
-                    </div>`).join('');
-            });
+            const map=['Fazer Vistoria','Mandar Boletos','Falta Pagamento','Pagamento Efetuado'];
+            const cols=['col-vistoria','col-boletos','col-pagamento','col-concluido'];
+            cols.forEach((id,i)=>{ document.getElementById(id).innerHTML=vendas.filter(v=>v.status===map[i]).map(v=>`<div class="v-card" data-id="${v.id}"><input type="checkbox" class="check-venda check-card" value="${v.id}"><div onclick="preparaEdicaoVenda('${v.id}')"><div class="flex items-center gap-2 mb-2">${v.suhai?'<i class="fas fa-star text-green-500 text-[10px]"></i>':'<i class="fas fa-bell text-yellow-500 text-[10px]"></i>'}<h4 class="text-[11px] font-black uppercase text-white truncate pr-6">${v.cliente}</h4></div><p class="text-[10px] text-blue-400 font-bold mb-3">${v.tel}</p><div class="badge-valor w-full mb-2"><span class="text-[7px] uppercase font-bold text-gray-500">Prêmio</span><span class="text-[11px] font-bold text-white">${formatBRL(v.valor)}</span></div><div class="flex gap-2"><div class="badge-valor"><span class="text-[7px] uppercase font-bold text-blue-500">Cheia</span><span class="text-[10px] font-bold">${formatBRL(v.comissao_cheia)}</span></div><div class="badge-valor"><span class="text-[7px] uppercase font-bold text-green-500">Vend.</span><span class="text-[10px] font-bold">${formatBRL(v.comissao_vendedor)}</span></div></div></div></div>`).join(''); });
+        }
+        function renderVendedores() {
+            if(!currentUser.isAdmin) return;
+            document.getElementById('gridVendedores').innerHTML = window.cloud.usuarios.map(u => `<div class="v-card border-l-red-500" onclick="preparaEdicaoUsuario('${u.id}')"><h4 class="text-[11px] font-black uppercase text-white truncate">${u.nome}</h4><p class="text-[9px] text-gray-400 mt-2 uppercase">FUNÇÃO: ${u.setor}</p></div>`).join('');
         }
 
-        function renderKanbanIndicacoes(ind) {
-            const cols = ['ind-col-nova','ind-col-whats','ind-col-cotacao','ind-col-atencao'];
-            const map = ['NOVA INDICAÇÃO','WHATSAPP','COTAÇÃO REALIZADA','COBRAR ATENÇÃO'];
-            cols.forEach((id, i) => {
-                document.getElementById(id).innerHTML = ind.filter(x => x.status === map[i]).map(x => `<div class="v-card border-l-yellow-500" data-id="${x.id}"><input type="checkbox" class="check-ind check-card" value="${x.id}"><div onclick="preparaEdicaoIndicacao('${x.id}')"><h4 class="text-[11px] font-black uppercase text-white truncate pr-6">${x.cliente}</h4><p class="text-[10px] text-blue-400 font-bold mb-1">${x.tel}</p></div></div>`).join('');
-            });
-        }
+        // --- HELPERS ---
+        window.preparaEdicaoUsuario = (id) => { const u = window.cloud.usuarios.find(x=>x.id===id); document.getElementById('u_id').value=u.id; document.getElementById('u_nome').value=u.nome; document.getElementById('u_login').value=u.login; document.getElementById('u_senha').value=u.senha; document.getElementById('u_setor').value=u.setor; document.getElementById('u_comissao').value=u.comissao; document.getElementById('btnDelUser').classList.remove('hidden'); openModal('modalUsuario'); };
+        window.preparaEdicaoVenda = (id) => { const v = window.cloud.vendas.find(x=>x.id===id); document.getElementById('v_id').value=v.id; document.getElementById('v_cliente').value=v.cliente; document.getElementById('v_tel').value=v.tel; document.getElementById('v_vendedor').value=v.vendedor; document.getElementById('v_valor').value=v.valor; document.getElementById('v_comissao_cheia').value=v.comissao_cheia||0; document.getElementById('v_comissao_vendedor').value=v.comissao_vendedor||0; document.getElementById('v_suhai').checked=v.suhai||false; document.getElementById('v_status').value=v.status; openModal('modalVenda'); };
+        window.preparaEdicaoIndicacao = (id) => { const i = window.cloud.indicacoes.find(x=>x.id===id); document.getElementById('ind_id').value=i.id; document.getElementById('ind_cliente').value=i.cliente; document.getElementById('ind_tel').value=i.tel; document.getElementById('ind_veiculo').value=i.veiculo; document.getElementById('ind_vendedor').value=i.vendedor; document.getElementById('ind_suhai').checked=i.suhai||false; document.getElementById('ind_info').value=i.info||""; document.getElementById('ind_status').value=i.status; openModal('modalIndicacao'); };
 
-        async function EXCLUIR_ITEM_DIRETO(col) { if(confirm("Apagar?")) { await window.cloud.apagar(col, (col==='vendas'?document.getElementById('v_id').value : col==='usuarios'?document.getElementById('u_id').value : document.getElementById('ind_id').value)); closeModal('modalVenda'); closeModal('modalIndicacao'); closeModal('modalUsuario'); } }
-        async function EXCLUIR_MASSA(col) { const sels = document.querySelectorAll(col==='vendas'?'.check-venda:checked':'.check-ind:checked'); if(sels.length && confirm("Confirmar?")) { for(let c of sels) await window.cloud.apagar(col, c.value); } }
-        async function LIMPAR_PRODUCAO_TOTAL() { if(confirm("Zerar produção?")) { for(let v of window.cloud.vendas) await window.cloud.apagar('vendas', v.id); } }
-        
-        window.openModalProducaoNovo = () => { document.getElementById('v_id').value = ""; document.getElementById('formVenda').reset(); openModal('modalVenda'); };
-        window.openModalIndicacaoNovo = () => { document.getElementById('ind_id').value = ""; document.getElementById('formIndicacao').reset(); openModal('modalIndicacao'); };
-        
-        window.preparaEdicaoVenda = (id) => {
-            const v = window.cloud.vendas.find(x => x.id === id);
-            document.getElementById('v_id').value = v.id;
-            document.getElementById('v_cliente').value = v.cliente;
-            document.getElementById('v_tel').value = v.tel;
-            document.getElementById('v_vendedor').value = v.vendedor;
-            document.getElementById('v_valor').value = v.valor;
-            document.getElementById('v_comissao_cheia').value = v.comissao_cheia || 0;
-            document.getElementById('v_comissao_vendedor').value = v.comissao_vendedor || 0;
-            document.getElementById('v_suhai').checked = v.suhai || false;
-            document.getElementById('v_status').value = v.status;
-            openModal('modalVenda');
-        };
-
-        window.preparaEdicaoIndicacao = (id) => {
-            const i = window.cloud.indicacoes.find(x => x.id === id);
-            document.getElementById('ind_id').value = i.id;
-            document.getElementById('ind_cliente').value = i.cliente;
-            document.getElementById('ind_tel').value = i.tel;
-            document.getElementById('ind_veiculo').value = i.veiculo;
-            document.getElementById('ind_vendedor').value = i.vendedor;
-            document.getElementById('ind_suhai').checked = i.suhai || false;
-            document.getElementById('ind_info').value = i.info || "";
-            document.getElementById('ind_status').value = i.status;
-            openModal('modalIndicacao');
-        };
-
+        document.getElementById('formUsuario').onsubmit = async (e) => { e.preventDefault(); await window.cloud.salvarUsuario({ id: document.getElementById('u_id').value, nome: document.getElementById('u_nome').value.toUpperCase(), login: document.getElementById('u_login').value.toLowerCase(), senha: document.getElementById('u_senha').value, setor: document.getElementById('u_setor').value, comissao: document.getElementById('u_comissao').value }); closeModal('modalUsuario'); };
         document.getElementById('formVenda').onsubmit = async (e) => { e.preventDefault(); await window.cloud.salvarVenda({ id: document.getElementById('v_id').value, cliente: document.getElementById('v_cliente').value.toUpperCase(), tel: document.getElementById('v_tel').value, vendedor: document.getElementById('v_vendedor').value, valor: document.getElementById('v_valor').value, comissao_cheia: document.getElementById('v_comissao_cheia').value, comissao_vendedor: document.getElementById('v_comissao_vendedor').value, suhai: document.getElementById('v_suhai').checked, status: document.getElementById('v_status').value }); closeModal('modalVenda'); };
         document.getElementById('formIndicacao').onsubmit = async (e) => { e.preventDefault(); await window.cloud.salvarIndicacao({ id: document.getElementById('ind_id').value, cliente: document.getElementById('ind_cliente').value.toUpperCase(), tel: document.getElementById('ind_tel').value, veiculo: document.getElementById('ind_veiculo').value.toUpperCase(), vendedor: document.getElementById('ind_vendedor').value, suhai: document.getElementById('ind_suhai').checked, info: document.getElementById('ind_info').value.toUpperCase(), status: document.getElementById('ind_status').value }); closeModal('modalIndicacao'); };
         document.getElementById('formAdminIndicacao').onsubmit = async (e) => { e.preventDefault(); await window.cloud.salvarIndicacao({ cliente: document.getElementById('adm_ind_cliente').value.toUpperCase(), tel: document.getElementById('adm_ind_tel').value, veiculo: document.getElementById('adm_ind_veiculo').value.toUpperCase(), vendedor: document.getElementById('adm_ind_vendedor').value, suhai: document.getElementById('adm_ind_suhai').checked, info: document.getElementById('adm_ind_info').value.toUpperCase(), status: 'NOVA INDICAÇÃO' }); alert('OK!'); e.target.reset(); };
 
+        async function EXCLUIR_ITEM_DIRETO(col) { if(confirm("Apagar?")) { await window.cloud.apagar(col, (col==='vendas'?document.getElementById('v_id').value : col==='usuarios'?document.getElementById('u_id').value : document.getElementById('ind_id').value)); closeModal('modalVenda'); closeModal('modalIndicacao'); closeModal('modalUsuario'); } }
+        async function EXCLUIR_MASSA(col) { const cl = col==='vendas'?'.check-venda':'.check-ind'; const sels=document.querySelectorAll(`${cl}:checked`); if(sels.length && confirm("Excluir?")) { for(let c of sels) await window.cloud.apagar(col, c.value); } }
+        async function LIMPAR_PRODUCAO_TOTAL() { if(confirm("Zerar tudo?")) { for(let v of window.cloud.vendas) await window.cloud.apagar('vendas', v.id); } }
+        window.openModalProducaoNovo = () => { document.getElementById('v_id').value = ""; document.getElementById('formVenda').reset(); openModal('modalVenda'); };
+        window.openModalIndicacaoNovo = () => { document.getElementById('ind_id').value = ""; document.getElementById('formIndicacao').reset(); openModal('modalIndicacao'); };
+        window.openModalUsuarioNovo = () => { document.getElementById('u_id').value = ""; document.getElementById('formUsuario').reset(); openModal('modalUsuario'); };
         function initSortable() {
             document.querySelectorAll('.sortable-list').forEach(col => new Sortable(col, { group: 'prod', animation: 200, onEnd: async (e) => await window.cloud.updateStatus('vendas', e.item.getAttribute('data-id'), e.to.getAttribute('data-status')) }));
             document.querySelectorAll('.sortable-list-ind').forEach(col => new Sortable(col, { group: 'ind', animation: 200, onEnd: async (e) => await window.cloud.updateStatus('indicacoes', e.item.getAttribute('data-id'), e.to.getAttribute('data-status')) }));
         }
+        function showSection(id, btn) { document.querySelectorAll('.section').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); btn.classList.add('active'); }
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; document.querySelectorAll('input[type="hidden"]').forEach(i => i.value = ""); }
-        function showSection(id, btn) { document.querySelectorAll('.section').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); btn.classList.add('active'); }
-        function renderLinks() { document.getElementById('containerLinks').innerHTML = (window.cloud.links || []).map(l => `<div class="bg-[#111827] p-6 rounded-2xl border border-gray-800"><p class="text-[11px] font-black uppercase text-blue-400 mb-2">${l.nome}</p><a href="${l.url}" target="_blank" class="bg-blue-600/20 text-blue-400 py-2 px-4 rounded-lg block text-center text-[10px] font-bold">Acessar</a></div>`).join(''); }
+        function addNovoLink() { const n=prompt("Nome:"); const u=prompt("URL:"); if(n&&u) window.cloud.salvarLink({nome:n, url:u}); }
     </script>
 </body>
 </html>
